@@ -12,7 +12,9 @@
 ### 2023-07-17 Replace Daily Energy counters 1+2  with Inverter reported Energy values 1+2
 ### 2023-07-20 Change S0 counter to 1000 pulse per kW
 ### 2023-08-05 Change pulse meter internal_filter to 20ms
-### 2024-02-11 Added Web Server + enabled CPU with 160 MHz 
+### 2024-02-11 Added Web Server + enabled CPU with 160 MHz
+### 2024-04-23_A Added timeout to pulse counters
+### 2024-04-23_B Added filer clamp to ignore S0 pulse counts outside of defined min/max
 ###
 esphome:
   name: pv-s0-zaehler1
@@ -79,7 +81,7 @@ api:
 
 #### Over The Air ################################################
 ota:
-  password: "YOUR-OTA-PASSWORD"
+  password: "85953d7fd33ee67e31ffa1dcdc3287b4"
 
 
 #### WiFi Setup ##################################################
@@ -257,15 +259,23 @@ sensor:
     device_class: power
     internal_filter: 20ms
     accuracy_decimals: 3
-    timeout: 2 min
     filters:
       # Filter outliers
-      #- median:
-      #    window_size: 3
-      #    send_every: 1
-      #    send_first_at: 1
-      # Convert pulses/min to kW bei 1000 Imp/kWh
+      - max:
+          window_size: 7
+          send_every: 4
+          send_first_at: 3  # default is 1
+      # Convert pulses/min to kW bei 1000 Imp/kWh --> 0.06
       - multiply: 0.06
+      # Publish 0 if no new values have been received for 5 minutes
+      - timeout:
+          timeout: 300s
+          value: 0.0
+      - clamp:
+          min_value: 0.00
+          max_value: 5.50  # Max Output Power of Model 5000xi is 5 kW + 10%
+          ignore_out_of_range: true
+
 #    total:
 #      name: "PV-Energy 1"
 #      unit_of_measurement: "kWh"
@@ -286,15 +296,23 @@ sensor:
     device_class: power
     internal_filter: 20ms
     accuracy_decimals: 3
-    timeout: 2 min
     filters:
       # Filter outliers
-      #- median:
-      #    window_size: 3
-      #    send_every: 1
-      #    send_first_at: 1
-      # Convert pulses/min to kW bei 1000 Imp/kWh
+      - max:
+          window_size: 7
+          send_every: 4
+          send_first_at: 3  # default is 1
+      # Convert pulses/min to kW bei 1000 Imp/kWh --> 0.06
       - multiply: 0.06
+      # Publish 0 if no new values have been received for 5 minutes
+      - timeout:
+          timeout: 300s
+          value: 0.0
+      - clamp:
+          min_value: 0.00
+          max_value: 5.50  # Max Output Power of Model 5000xi is 5 kW + 10%
+          ignore_out_of_range: true
+
 #    total:
 #      name: "PV-Energy 2"
 #      unit_of_measurement: "kWh"
