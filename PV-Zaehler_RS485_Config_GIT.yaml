@@ -15,9 +15,19 @@
 ### 2024-02-11 Added Web Server + enabled CPU with 160 MHz
 ### 2024-04-23_A Added timeout to pulse counters
 ### 2024-04-23_B Added filer clamp to ignore S0 pulse counts outside of defined min/max
+### 2024-05-05 Added Power Efficency sensor for Inverter 1 an 2
+### 2024-06-29 Update OTA for ESPhome V6
+### 2024-07-13 Status-Texte korrigiert
+### 2024-09-28 Sscanf gekürzt um ZustandText
 ###
 esphome:
   name: pv-s0-zaehler1
+  comment: "KACO Powador 2500ix 4500ix Inverter (S0 + RS485)"
+
+  project:
+    name: "ESP8266.KACO Powador Inverter"
+    version: "1.0"
+
   #platformio_options:
   #  # Change CPU speed from 80 MHz to 160 MHz
   #  board_build.f_cpu: 160000000L
@@ -81,7 +91,8 @@ api:
 
 #### Over The Air ################################################
 ota:
-  password: "YOUR-OTA-PASSWORD"
+  platform: esphome
+  password: "85953d7fd33ee67e31ffa1dcdc3287b4"
 
 
 #### WiFi Setup ##################################################
@@ -90,8 +101,9 @@ wifi:
   networks:
   - ssid: !secret wifi_ssid
     password: !secret wifi_password
-  - ssid: !secret wifi_ssid_2
-    password: !secret wifi_password_2
+  ## Optional second WiFi network
+  #- ssid: !secret wifi_ssid_2
+  #  password: !secret wifi_password_2
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
@@ -433,6 +445,17 @@ sensor:
     icon: "mdi:flash"
     device_class: energy
     state_class: total_increasing
+  - platform: template
+    name: "Inverter 1 Efficiency"
+    id: inv_1_efficiency
+    unit_of_measurement: '%'
+    lambda: |-
+      if (id(inv_1_supplied_power).state == 0.0 || id(inv_1_generator_power).state == 0.0) {
+        return {};
+      } else {
+        return (id(inv_1_supplied_power).state / id(inv_1_generator_power).state) * 100.0;
+      }
+
 
   ### Ersatz für bisherigen Pulse Counter Sensor
   - platform: template
@@ -516,6 +539,16 @@ sensor:
     icon: "mdi:flash"
     device_class: energy
     state_class: total_increasing
+  - platform: template
+    name: "Inverter 2 Efficiency"
+    id: inv_2_efficiency
+    unit_of_measurement: '%'
+    lambda: |-
+      if (id(inv_2_supplied_power).state == 0.0 || id(inv_2_generator_power).state == 0.0) {
+        return {};
+      } else {
+        return (id(inv_2_supplied_power).state / id(inv_2_generator_power).state) * 100.0;
+      }
 
   ### Ersatz für bisherigen Pulse Counter Sensor
   - platform: template
@@ -664,9 +697,9 @@ text_sensor:
                 int dailyEnergy = 0;  // Convert to integer with unit Wh
                 String parityByte = "0";
                 String InvDeviceName = "------";
-                String ZustandText = " ";
+                String ZustandText = "-                                                           ";
 
-                sscanf(data.c_str(),"%s %i %f %f %i %f %f %i %f %i %s %s %s", &deviceId, &state, &generatorVoltage, &generatorCurrent, &generatorPower, &gridVoltage, &gridCurrent, &suppliedPower, &deviceTemperature, &dailyEnergy, &parityByte, &InvDeviceName, &ZustandText);
+                sscanf(data.c_str(),"%s %i %f %f %i %f %f %i %f %i %9s %s", &deviceId, &state, &generatorVoltage, &generatorCurrent, &generatorPower, &gridVoltage, &gridCurrent, &suppliedPower, &deviceTemperature, &dailyEnergy, &parityByte, &InvDeviceName);
 
                 switch (state) {
                   case 0: ZustandText = "Wechselrichter hat sich gerade eingeschaltet";
@@ -683,7 +716,7 @@ text_sensor:
                     break;
                   case 6: ZustandText = "Wartemodus vor Einspeisung, Netz- und Solarspannung testen";
                     break;
-                  case 7: ZustandText = "Wartemodus vor Selbsttest, Netzund Solarspannung testen";
+                  case 7: ZustandText = "Wartemodus vor Selbsttest, Netz- und Solarspannung testen";
                     break;
                   case 8: ZustandText = "Selbsttest der Relais";
                     break;
