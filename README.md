@@ -9,3 +9,10 @@ The ESPHome YAML configuration does also have an additional DHT11 sensor for Tem
 <img src="https://github.com/GernotAlthammer/HA-ESPHome-KACO-Powador-4500xi-S0-RS485/blob/main/Pictures/Pic2_Sensoren.png">
 <img src="https://github.com/GernotAlthammer/HA-ESPHome-KACO-Powador-4500xi-S0-RS485/blob/main/Pictures/Pic3_Konfiguration.png">
 <img src="https://github.com/GernotAlthammer/HA-ESPHome-KACO-Powador-4500xi-S0-RS485/blob/main/Pictures/Pic4_Diagnose.png">
+
+
+I'm working on this project as a hobby. My work on this software is in no way associated with a company. If you like to use it, or improve on it, feel free. Use it at your own risk - it might work perfectly or it might not.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+Edit: 2025-01-18
