@@ -12,7 +12,7 @@ The ESPHome YAML configuration does also have an additional DHT11 sensor for Tem
 <img src="https://github.com/GernotAlthammer/HA-ESPHome-KACO-Powador-4500xi-S0-RS485/blob/main/Pictures/Pic3_Konfiguration.png">
 <img src="https://github.com/GernotAlthammer/HA-ESPHome-KACO-Powador-4500xi-S0-RS485/blob/main/Pictures/Pic4_Diagnose.png">
 
-
+To compile the ESPHome code for the ESP32 it is necessary to copy the file uart_read_line_sensor.h to the ESPHome directory of your Home Assistant.
 
 <h3 tabindex="-1" class="heading-element" dir="auto">Notes</h3>
 I'm working on this project as a hobby. My work on this software is in no way associated with a company. If you like to use it, or improve on it, feel free. Use it at your own risk - it might work perfectly or it might not.
