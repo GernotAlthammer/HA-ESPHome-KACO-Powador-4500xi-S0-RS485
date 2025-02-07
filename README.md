@@ -14,8 +14,8 @@ To compile the ESPHome code for the ESP32 it is necessary to copy the file uart_
 
 The ESPHome YAML configuration does also have an additional DHT11 sensor for Temperature and Humidity to measure the environment close to the Inverters.
 
-<img src="https://github.com/GernotAlthammer/HA-ESPHome-KACO-Powador-4500xi-S0-RS485/blob/main/Pictures/Pic2_Sensoren.png"><img src="https://github.com/GernotAlthammer/HA-ESPHome-KACO-Powador-4500xi-S0-RS485/blob/main/Pictures/Pic4_Diagnose.png">
-<img src="https://github.com/GernotAlthammer/HA-ESPHome-KACO-Powador-4500xi-S0-RS485/blob/main/Pictures/Pic1_Steuerelemente.png"><img src="https://github.com/GernotAlthammer/HA-ESPHome-KACO-Powador-4500xi-S0-RS485/blob/main/Pictures/Pic3_Konfiguration.png">
+<img src="https://github.com/GernotAlthammer/HA-ESPHome-KACO-Powador-4500xi-S0-RS485/blob/main/Pictures/Pic2_Sensoren.png" style="width: 50%;"><img src="https://github.com/GernotAlthammer/HA-ESPHome-KACO-Powador-4500xi-S0-RS485/blob/main/Pictures/Pic4_Diagnose.png" style="width: 25%;">
+<img src="https://github.com/GernotAlthammer/HA-ESPHome-KACO-Powador-4500xi-S0-RS485/blob/main/Pictures/Pic1_Steuerelemente.png" style="width: 25%;"><img src="https://github.com/GernotAlthammer/HA-ESPHome-KACO-Powador-4500xi-S0-RS485/blob/main/Pictures/Pic3_Konfiguration.png" style="width: 25%;">
 
 <h3 tabindex="-1" class="heading-element" dir="auto">Notes</h3>
 I'm working on this project as a hobby. My work on this software is in no way associated with a company. If you like to use it, or improve on it, feel free. Use it at your own risk - it might work perfectly or it might not.
