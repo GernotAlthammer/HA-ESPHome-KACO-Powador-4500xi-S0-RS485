@@ -1,4 +1,9 @@
 This is a Home Assistant integration for two KACO solar power inverters via a ESPHome.
+
+<img src="https://github.com/GernotAlthammer/HA-ESPHome-KACO-Powador-4500xi-S0-RS485/blob/main/Pictures/HA-KACO-Panel-0.png">
+
+<img src="https://github.com/GernotAlthammer/HA-ESPHome-KACO-Powador-4500xi-S0-RS485/blob/main/Pictures/HA-KACO-Panel-1.png" style="width: 50%;"><img src="https://github.com/GernotAlthammer/HA-ESPHome-KACO-Powador-4500xi-S0-RS485/blob/main/Pictures/HA-KACO-Panel-2.png" style="width: 50%;">
+
 The ESP8266 works as Data logger for KACO Powador Inverters 2500xi and 4500xi via two interfaces:
 - Interface 1: S0 imupls count interface for Supplied Power to Grid (the number of counts per 1 kW is configurable in Inverter-Setup)
 - Interface 2: RS485 serial bus communication protocol for various data provided from the inverter (Inverter State, PV-Voltage, PV-Current, PV-Power, Grid-Voltage, Grid-Current, Supplied Power to Grid, Inverter Temperature, Daily Energy, Inverter Type Name)
