@@ -1,0 +1,1362 @@
+title: Balkon-Kraftwerk
+views:
+  - title: Balkon-Kraftwerk
+    path: default_view
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: gauge
+            entity: sensor.stecker_8_power
+            max: 850
+            needle: true
+            name: Balkonkraftwerk Leistung aktuell
+            severity:
+              green: 0
+              yellow: 600
+              red: 750
+          - type: entities
+            entities:
+              - entity: sensor.ha_total_active_power
+                name: HAUS Verbrauch
+              - entity: sensor.stecker_8_power
+                name: Eingespeiste Leistung
+                secondary_info: last-updated
+              - entity: sensor.wvc800_output_power
+                name: WVC800 Leistung
+                secondary_info: last-updated
+              - entity: sensor.wvc600_output_power
+                secondary_info: last-updated
+                name: WVC600 Leistung
+            title: Balkonkraftwerk 830 W
+            state_color: true
+            show_header_toggle: false
+          - type: entities
+            entities:
+              - entity: sensor.balkonkraftwerk_tagesenegie
+                name: Erzeugte Energie (heute)
+                secondary_info: last-updated
+              - entity: sensor.balkonkraftwerk_energie
+                name: Erzeugte Energie (gesamt)
+                secondary_info: none
+              - entity: sensor.stecker_8_spannung
+                name: Netz-Spannung
+              - entity: sensor.stecker_8_stromstarke
+                name: Netz-Strom
+              - entity: switch.stecker_8_sockel_1
+              - entity: switch.gernot_t_online_de_api_nutzung
+                name: SOLIX Online-API
+            state_color: true
+            show_header_toggle: false
+          - type: markdown
+            content: >-
+              [**HA**](/lovelace/zaehler-haus)+[**PV**](/pv-anlage/default_view)+[**KACO**](/pv-anlage/kaco)
+              - [**WVC800**](/balkon-kraft/wvc800) -
+              [**WVC600**](/balkon-kraft/wvc600) -
+              [**WVC700**](/balkon-kraft/wvc700) 
+      - type: vertical-stack
+        cards:
+          - type: horizontal-stack
+            cards:
+              - type: gauge
+                max: 100
+                needle: true
+                name: Ladestand E1600
+                severity:
+                  green: 70
+                  yellow: 30
+                  red: 0
+                entity: sensor.solarbank_e1600_ladestand
+              - type: gauge
+                max: 100
+                needle: true
+                name: Ladestand E1600B
+                severity:
+                  green: 70
+                  yellow: 30
+                  red: 0
+                entity: sensor.solarbank_e1600b_ladestand
+          - type: horizontal-stack
+            cards:
+              - type: entities
+                entities:
+                  - entity: sensor.solarbank_e1600_solarleistung
+                    name: Solarpanel
+                  - entity: sensor.solix_e1600_tagesenergie
+                    name: Energie
+                  - entity: sensor.solarbank_e1600_betriebszustand
+                    name: Betriebszustand
+                  - entity: sensor.solarbank_e1600_akkuenergie
+                    name: Akku
+                  - entity: sensor.solarbank_e1600_akkuleistung
+                    secondary_info: none
+                    name: Akkuleistung
+                  - entity: switch.solarbank_e1600_erlaube_leistungsabgabe
+                    name: Abgabe
+                  - entity: sensor.solarbank_e1600_einspeisevorgabe
+                    name: Vorgabe
+                  - entity: sensor.solarbank_e1600_einspeiseleistung
+                    name: Eispeisung
+                  - entity: binary_sensor.wvc800_power_generation
+                    name: Inverter
+                  - entity: sensor.wvc800_output_power
+                    name: I800
+                state_color: true
+              - type: entities
+                entities:
+                  - entity: sensor.solarbank_e1600b_solarleistung
+                    name: Solarpanel
+                  - entity: sensor.solix_e1600b_tagesenergie
+                    name: Energie
+                  - entity: sensor.solarbank_e1600b_betriebszustand
+                    name: Betriebszustand
+                  - entity: sensor.solarbank_e1600b_akkuenergie
+                    name: Akku
+                  - entity: sensor.solarbank_e1600b_akkuleistung
+                    secondary_info: none
+                    name: Akkuleistung
+                  - entity: switch.solarbank_e1600b_erlaube_leistungsabgabe
+                    name: Abgabe
+                  - entity: sensor.solarbank_e1600b_einspeisevorgabe
+                    name: Vorgabe
+                  - entity: sensor.solarbank_e1600b_einspeiseleistung
+                    name: Eispeisung
+                  - entity: binary_sensor.wvc600_power_generation
+                    name: Inverter
+                  - entity: sensor.wvc600_output_power
+                    name: I600
+                state_color: true
+      - type: entities
+        entities:
+          - entity: binary_sensor.wvc800_wifi_status
+          - entity: sensor.wvc800_temperature
+          - entity: sensor.wvc800_wvc_state
+            name: WVC800 Status
+          - entity: binary_sensor.wvc600_wifi_status
+          - entity: sensor.wvc600_temperature
+          - entity: sensor.wvc600_wvc_state
+            name: WVC600 Status
+        title: Inverter Betriebsdaten
+        state_color: true
+      - chart_type: line
+        period: 5minute
+        type: statistics-graph
+        entities:
+          - sensor.solarbank_e1600_solarleistung
+          - sensor.wvc800_output_power
+          - sensor.solarbank_e1600b_solarleistung
+          - sensor.wvc600_output_power
+        stat_types:
+          - max
+        days_to_show: 1
+        title: Leistung (max)
+        hide_legend: false
+        min_y_axis: 0
+      - chart_type: line
+        period: hour
+        type: statistics-graph
+        entities:
+          - sensor.solarbank_e1600_ladestand
+          - sensor.solarbank_e1600b_ladestand
+        days_to_show: 7
+        stat_types:
+          - max
+        hide_legend: false
+        logarithmic_scale: false
+        min_y_axis: 0
+      - chart_type: line
+        period: 5minute
+        type: statistics-graph
+        entities:
+          - sensor.aussentemperatur
+          - sensor.wvc800_temperature
+          - sensor.wvc600_temperature
+          - sensor.auriol_ahfl_1_temperatur
+        days_to_show: 1
+        stat_types:
+          - max
+        title: Temperatur (max)
+        hide_legend: false
+      - chart_type: line
+        period: 5minute
+        type: statistics-graph
+        entities:
+          - sensor.wvc800_ac_voltage
+          - sensor.wvc600_ac_voltage
+          - sensor.stecker_8_spannung
+        stat_types:
+          - max
+        days_to_show: 1
+        hide_legend: false
+        title: Netz-Spannung (max)
+      - chart_type: line
+        period: 5minute
+        type: statistics-graph
+        entities:
+          - sensor.wvc800_pv_voltage
+          - sensor.wvc600_pv_voltage
+        stat_types:
+          - max
+        hide_legend: false
+        days_to_show: 1
+        logarithmic_scale: false
+        title: PV-Spannung (max)
+      - chart_type: bar
+        period: day
+        type: statistics-graph
+        entities:
+          - sensor.solix_e1600_tagesenergie
+          - sensor.solix_e1600b_tagesenergie
+          - sensor.balkonkraftwerk_tagesenegie
+        days_to_show: 7
+        stat_types:
+          - state
+        hide_legend: false
+        logarithmic_scale: false
+        min_y_axis: 0
+      - chart_type: line
+        period: 5minute
+        type: statistics-graph
+        entities:
+          - sensor.sunlight_helligkeit
+        days_to_show: 1
+        stat_types:
+          - mean
+        title: Helligkeit (mittel)
+        hide_legend: true
+        min_y_axis: 0
+    icon: mdi:solar-panel
+  - title: SOLIX1
+    path: solix
+    visible:
+      - user: c31d8219ef5148658230b1eaa2b19120
+      - user: 604d88cc9c3340c2831508d81ef0a996
+      - user: 75e49e40b76e4afbb0355c3e14a2ab28
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: picture-elements
+            image: /local/anker/home_solix1.png
+            elements:
+              - type: image
+                entity: sensor.bk_einspeisung
+                state_image:
+                  'on': /local/kaco/line_o-u.gif
+                  'off': /local/kaco/kaco_null.png
+                style:
+                  top: 57%
+                  left: 31.7%
+                  width: 18%
+                tap_action:
+                  action: none
+                hold_action:
+                  action: none
+                title: Einspeisung aktiv
+              - type: image
+                entity: sun.sun
+                title: Sonnenstand
+                state_image:
+                  above_horizon: /local/anker/sun-icon1.png
+                  below_horizon: /local/anker/moon-icon1.png
+                style:
+                  top: 8%
+                  left: 14%
+                  width: 13%
+                tap_action:
+                  action: none
+                hold_action:
+                  action: none
+              - type: image
+                entity: sensor.solarbank_e1600_betriebszustand
+                title: Einspeisen
+                state_image:
+                  detection: /local/anker/arrow_l1.png
+                  bypass: /local/anker/arrow_l2.png
+                  discharge: /local/anker/arrow_l2.png
+                  charge: /local/anker/arrow_l1.png
+                  charge_bypass: /local/anker/arrow_l2.png
+                  charge_priority: /local/anker/arrow_l1.png
+                  wakeup: /local/anker/arrow_l2.png
+                  full_bypass: /local/anker/arrow_l2.png
+                  standby: /local/anker/standby1.png
+                  unknown: /local/anker/unknown1.png
+                style:
+                  left: 52%
+                  top: 46%
+                  width: 10%
+                tap_action:
+                  action: none
+                hold_action:
+                  action: none
+              - type: image
+                entity: sensor.solarbank_e1600_betriebszustand
+                title: Aufladen
+                state_image:
+                  detection: /local/anker/arrow_r1.png
+                  bypass: /local/anker/arrow_r2.png
+                  discharge: /local/anker/arrow_r1.png
+                  charge: /local/anker/arrow_r2.png
+                  charge_bypass: /local/anker/arrow_r2.png
+                  charge_priority: /local/anker/arrow_r2.png
+                  wakeup: /local/anker/arrow_r1.png
+                  full_bypass: /local/anker/arrow_r2.png
+                  standby: /local/anker/standby1.png
+                  unknown: /local/anker/unknown1.png
+                style:
+                  left: 52%
+                  top: 34%
+                  width: 10%
+                tap_action:
+                  action: none
+                hold_action:
+                  action: none
+              - type: state-label
+                entity: sensor.solarbank_e1600_einspeiseleistung
+                title: Einspeisung ins Hausnetz
+                style:
+                  top: 64.5%
+                  left: 40%
+                  color: blue
+                  font-size: 18px
+              - type: image
+                image: /local/kaco/home-power1.png
+                style:
+                  top: 61%
+                  left: 40%
+                  width: 6%
+                tap_action:
+                  action: none
+                hold_action:
+                  action: none
+              - type: state-label
+                entity: sensor.ha_total_active_power
+                title: Verbrauch aus Stromnetz
+                style:
+                  top: 64.5%
+                  left: 79%
+                  color: blue
+                  font-size: 18px
+              - type: image
+                image: /local/kaco/grid-in1.png
+                style:
+                  top: 61%
+                  left: 77%
+                  width: 6%
+                tap_action:
+                  action: none
+                hold_action:
+                  action: none
+              - type: state-label
+                entity: sensor.system_solix1600_kostenersparnis
+                style:
+                  top: 92%
+                  left: 23.5%
+                  color: black
+                  font-size: 18px
+              - type: state-label
+                entity: sensor.system_solix1600_co2_einsparung
+                style:
+                  top: 92%
+                  left: 51%
+                  color: black
+                  font-size: 18px
+              - type: state-label
+                entity: sensor.system_solix1600_ertrag_gesamt
+                style:
+                  top: 92%
+                  left: 79%
+                  color: black
+                  font-size: 18px
+              - type: state-label
+                entity: sensor.solarbank_e1600_betriebszustand
+                title: Betriebsmodus Speicherbatterie
+                style:
+                  top: 32.5%
+                  left: 73%
+                  color: orange
+                  font-size: 12px
+              - type: state-label
+                entity: sensor.solarbank_e1600_akkuleistung
+                title: Ladeleistung für Speicherbatterie
+                style:
+                  top: 5%
+                  left: 69%
+                  color: blue
+                  font-size: 18px
+              - type: state-label
+                entity: sensor.solarbank_e1600_ladestand
+                title: Ladestand Speicherbatterie
+                style:
+                  top: 5%
+                  left: 90.9%
+                  color: blue
+                  font-size: 18px
+              - type: state-label
+                entity: select.solarbank_e1600_ladestandreserve
+                title: Minimale Ladereserve Speicherbatterie
+                style:
+                  top: 19.6%
+                  left: 92%
+                  color: blue
+                  font-size: 14px
+              - type: state-label
+                entity: sensor.solarbank_e1600_akkuenergie
+                title: Energiestand Speicherbatterie
+                style:
+                  top: 17.4%
+                  left: 87.8%
+                  color: blue
+                  font-size: 14px
+              - type: state-label
+                entity: sensor.solarbank_e1600_solarleistung
+                title: Leistung der Solarpanels
+                style:
+                  top: 5%
+                  left: 36.5%
+                  color: blue
+                  font-size: 18px
+              - type: image
+                entity: sensor.wvc800_output_power
+                title: Inverter WVC800
+                image: /local/anker/inverter.png
+                style:
+                  top: 58%
+                  left: 20%
+                  width: 13%
+              - type: state-label
+                entity: sensor.stecker_8_power
+                title: Gemessene Einspeiseleistung
+                style:
+                  top: 70.5%
+                  left: 20%
+                  color: blue
+                  font-size: 18px
+              - type: state-label
+                entity: sensor.wvc800_output_power
+                title: Inverter Einspeiseleistung
+                style:
+                  top: 64.5%
+                  left: 20%
+                  color: blue
+                  font-size: 18px
+              - type: state-label
+                entity: sensor.wvc800_temperature
+                title: WVC800 Temperatur
+                style:
+                  top: 48.5%
+                  left: 20%
+                  color: blue
+                  font-size: 14px
+              - type: state-label
+                entity: sensor.wvc800_pv_voltage
+                title: WVC800 PV Spannung
+                style:
+                  top: 52.5%
+                  left: 20%
+                  color: blue
+                  font-size: 14px
+              - type: state-label
+                entity: sensor.wvc800_wvc_state
+                title: WVC800 Status
+                style:
+                  top: 67.5%
+                  left: 17%
+                  color: black
+                  font-size: 10px
+                tap_action:
+                  action: none
+                hold_action:
+                  action: none
+              - type: state-label
+                entity: binary_sensor.wvc800_power_generation
+                title: WVC800 Einspeisung
+                style:
+                  top: 58.5%
+                  left: 11%
+                  color: black
+                  font-size: 12px
+                tap_action:
+                  action: none
+                hold_action:
+                  action: none
+              - type: state-label
+                entity: sensor.solarbank_e1600_einspeisevorgabe
+                style:
+                  top: 77.5%
+                  left: 66%
+                  color: black
+                  font-size: 18px
+          - type: markdown
+            content: >-
+              [**HA**](/lovelace/zaehler-haus)+[**PV**](/pv-anlage/default_view)+[**KACO**](/pv-anlage/kaco)
+              - [**WVC800**](/balkon-kraft/wvc800) -
+              [**WVC600**](/balkon-kraft/wvc600) -
+              [**WVC700**](/balkon-kraft/wvc700) 
+      - type: vertical-stack
+        cards:
+          - type: gauge
+            entity: sensor.solarbank_e1600_akkuleistung
+            needle: true
+            max: 880
+            severity:
+              green: 0
+              yellow: -800
+              red: 800
+            name: EINSPEISEN  <------- AKKU -------> AUFLADEN
+            min: -880
+          - type: entities
+            entities:
+              - entity: sensor.solarbank_e1600_solarleistung
+                name: Solarleistung
+              - entity: sensor.battery_power_in
+              - entity: sensor.solarbank_e1600_akkuleistung
+                name: Akkuleistung
+              - entity: sensor.battery_power_out
+              - entity: sensor.solarbank_e1600_betriebszustand
+                name: Betriebszustand
+              - entity: sensor.solarbank_e1600_ladestand
+                name: Ladestand
+              - entity: sensor.solarbank_e1600_akkuenergie
+                name: Akkuenergie
+              - entity: sensor.solarbank_e1600_einspeisevorgabe
+                name: Einspeisevorgabe
+              - entity: sensor.solarbank_e1600_einspeiseleistung
+                name: Einspeiseleistung
+              - entity: sensor.solarbank_e1600_cloud_zustand
+                name: Cloud Zustand
+              - entity: sensor.solarbank_e1600_wifi
+                name: WiFi Verbindung
+            title: Solarbank E1600
+            state_color: true
+      - type: vertical-stack
+        cards:
+          - type: horizontal-stack
+            cards:
+              - type: entity
+                entity: sensor.solarbank_e1600_solarleistung
+                name: Solar->
+              - type: entity
+                entity: sensor.solarbank_e1600_akkuleistung
+                name: '->Akku'
+              - type: entity
+                entity: sensor.stecker_8_power
+                name: '->Haus'
+                icon: mdi:home-lightning-bolt-outline
+          - type: entities
+            entities:
+              - entity: switch.solarbank_e1600_erlaube_leistungsabgabe
+                name: Erlaube Leistungsabgabe
+              - entity: button.solarbank_e1600_details_aktualisieren
+                name: Details aktualisieren
+                icon: mdi:cog-refresh
+              - entity: number.solarbank_e1600_system_einspeisevorgabe
+                name: System Einspeisevorgabe
+              - entity: number.solarbank_e1600_ladeprioritatslimit
+                name: Ladeprioritätslimit
+              - entity: switch.solarbank_e1600_auto_upgrade
+                name: Auto-Upgrade
+              - entity: select.solarbank_e1600_ladestandreserve
+                name: Ladestandreserve
+              - entity: number.system_solix1600_kwh_preis
+                name: kWh Preis
+            title: Solarbank E1600
+            state_color: true
+            show_header_toggle: false
+          - chart_type: line
+            period: 5minute
+            type: statistics-graph
+            entities:
+              - sensor.solarbank_e1600_solarleistung
+              - sensor.solarbank_e1600_einspeiseleistung
+              - sensor.stecker_8_power
+              - sensor.solarbank_e1600_akkuleistung
+            stat_types:
+              - max
+            days_to_show: 1
+            hide_legend: false
+            min_y_axis: 0
+  - title: SOLIX2
+    path: solix2
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: picture-elements
+            image: /local/anker/home_solix1.png
+            elements:
+              - type: image
+                entity: sensor.bk_einspeisung
+                state_image:
+                  'on': /local/kaco/line_o-u.gif
+                  'off': /local/kaco/kaco_null.png
+                style:
+                  top: 57%
+                  left: 31.7%
+                  width: 18%
+                tap_action:
+                  action: none
+                hold_action:
+                  action: none
+                title: Einspeisung aktiv
+              - type: image
+                entity: sun.sun
+                title: Sonnenstand
+                state_image:
+                  above_horizon: /local/anker/sun-icon1.png
+                  below_horizon: /local/anker/moon-icon1.png
+                style:
+                  top: 8%
+                  left: 14%
+                  width: 13%
+                tap_action:
+                  action: none
+                hold_action:
+                  action: none
+              - type: image
+                entity: sensor.solarbank_e1600b_betriebszustand
+                title: Einspeisen
+                state_image:
+                  detection: /local/anker/arrow_l1.png
+                  bypass: /local/anker/arrow_l2.png
+                  discharge: /local/anker/arrow_l2.png
+                  charge: /local/anker/arrow_l1.png
+                  charge_bypass: /local/anker/arrow_l2.png
+                  charge_priority: /local/anker/arrow_l1.png
+                  wakeup: /local/anker/arrow_l2.png
+                  full_bypass: /local/anker/arrow_l2.png
+                  standby: /local/anker/standby1.png
+                  unknown: /local/anker/unknown1.png
+                style:
+                  left: 52%
+                  top: 46%
+                  width: 10%
+                tap_action:
+                  action: none
+                hold_action:
+                  action: none
+              - type: image
+                entity: sensor.solarbank_e1600b_betriebszustand
+                title: Aufladen
+                state_image:
+                  detection: /local/anker/arrow_r1.png
+                  bypass: /local/anker/arrow_r2.png
+                  discharge: /local/anker/arrow_r1.png
+                  charge: /local/anker/arrow_r2.png
+                  charge_bypass: /local/anker/arrow_r2.png
+                  charge_priority: /local/anker/arrow_r2.png
+                  wakeup: /local/anker/arrow_r1.png
+                  full_bypass: /local/anker/arrow_r2.png
+                  standby: /local/anker/standby1.png
+                  unknown: /local/anker/unknown1.png
+                style:
+                  left: 52%
+                  top: 34%
+                  width: 10%
+                tap_action:
+                  action: none
+                hold_action:
+                  action: none
+              - type: state-label
+                entity: sensor.solarbank_e1600b_einspeiseleistung
+                title: Einspeisung ins Hausnetz
+                style:
+                  top: 64.5%
+                  left: 40%
+                  color: blue
+                  font-size: 18px
+              - type: image
+                image: /local/kaco/home-power1.png
+                style:
+                  top: 61%
+                  left: 40%
+                  width: 6%
+                tap_action:
+                  action: none
+                hold_action:
+                  action: none
+              - type: state-label
+                entity: sensor.ha_total_active_power
+                title: Verbrauch aus Stromnetz
+                style:
+                  top: 64.5%
+                  left: 79%
+                  color: blue
+                  font-size: 18px
+              - type: image
+                image: /local/kaco/grid-in1.png
+                style:
+                  top: 61%
+                  left: 77%
+                  width: 6%
+                tap_action:
+                  action: none
+                hold_action:
+                  action: none
+              - type: state-label
+                entity: sensor.system_solix1600b_kostenersparnis
+                style:
+                  top: 92%
+                  left: 23.5%
+                  color: black
+                  font-size: 18px
+              - type: state-label
+                entity: sensor.system_solix1600b_co2_einsparung
+                style:
+                  top: 92%
+                  left: 51%
+                  color: black
+                  font-size: 18px
+              - type: state-label
+                entity: sensor.system_solix1600b_ertrag_gesamt
+                style:
+                  top: 92%
+                  left: 79%
+                  color: black
+                  font-size: 18px
+              - type: state-label
+                entity: sensor.solarbank_e1600b_betriebszustand
+                title: Betriebsmodus Speicherbatterie
+                style:
+                  top: 32.5%
+                  left: 73%
+                  color: orange
+                  font-size: 12px
+              - type: state-label
+                entity: sensor.solarbank_e1600b_akkuleistung
+                title: Ladeleistung für Speicherbatterie
+                style:
+                  top: 5%
+                  left: 69%
+                  color: blue
+                  font-size: 18px
+              - type: state-label
+                entity: sensor.solarbank_e1600b_ladestand
+                title: Ladestand Speicherbatterie
+                style:
+                  top: 5%
+                  left: 90.9%
+                  color: blue
+                  font-size: 18px
+              - type: state-label
+                entity: select.solarbank_e1600b_ladestandreserve
+                title: Minimale Ladereserve Speicherbatterie
+                style:
+                  top: 19.6%
+                  left: 92%
+                  color: blue
+                  font-size: 14px
+              - type: state-label
+                entity: sensor.solarbank_e1600b_akkuenergie
+                title: Energiestand Speicherbatterie
+                style:
+                  top: 17.4%
+                  left: 87.8%
+                  color: blue
+                  font-size: 14px
+              - type: state-label
+                entity: sensor.solarbank_e1600b_solarleistung
+                title: Leistung der Solarpanels
+                style:
+                  top: 5%
+                  left: 36.5%
+                  color: blue
+                  font-size: 18px
+              - type: image
+                entity: sensor.wvc600_output_power
+                title: Inverter WVC600
+                image: /local/anker/inverter.png
+                style:
+                  top: 58%
+                  left: 20%
+                  width: 13%
+              - type: state-label
+                entity: sensor.stecker_8_power
+                title: Gemessene Einspeiseleistung
+                style:
+                  top: 70.5%
+                  left: 20%
+                  color: blue
+                  font-size: 18px
+              - type: state-label
+                entity: sensor.wvc600_output_power
+                title: Inverter Einspeiseleistung
+                style:
+                  top: 64.5%
+                  left: 20%
+                  color: blue
+                  font-size: 18px
+              - type: state-label
+                entity: sensor.wvc600_temperature
+                title: WVC600 Temperatur
+                style:
+                  top: 48.5%
+                  left: 20%
+                  color: blue
+                  font-size: 14px
+              - type: state-label
+                entity: sensor.wvc600_pv_voltage
+                title: WVC600 PV Spannung
+                style:
+                  top: 52.5%
+                  left: 20%
+                  color: blue
+                  font-size: 14px
+              - type: state-label
+                entity: sensor.wvc600_wvc_state
+                title: WVC600 Status
+                style:
+                  top: 67.5%
+                  left: 17%
+                  color: black
+                  font-size: 10px
+                tap_action:
+                  action: none
+                hold_action:
+                  action: none
+              - type: state-label
+                entity: binary_sensor.wvc600_power_generation
+                title: WVC600 Einspeisung
+                style:
+                  top: 58.5%
+                  left: 11%
+                  color: black
+                  font-size: 12px
+                tap_action:
+                  action: none
+                hold_action:
+                  action: none
+              - type: state-label
+                entity: sensor.solarbank_e1600b_einspeisevorgabe
+                style:
+                  top: 77.5%
+                  left: 66%
+                  color: black
+                  font-size: 18px
+          - type: markdown
+            content: >-
+              [**HA**](/lovelace/zaehler-haus)+[**PV**](/pv-anlage/default_view)+[**KACO**](/pv-anlage/kaco)
+              - [**WVC800**](/balkon-kraft/wvc800) -
+              [**WVC600**](/balkon-kraft/wvc600) -
+              [**WVC700**](/balkon-kraft/wvc700) 
+      - type: vertical-stack
+        cards:
+          - type: gauge
+            entity: sensor.solarbank_e1600b_akkuleistung
+            needle: true
+            max: 880
+            severity:
+              green: 0
+              yellow: -800
+              red: 800
+            name: EINSPEISEN  <------- AKKU -------> AUFLADEN
+            min: -880
+          - type: entities
+            entities:
+              - entity: sensor.solarbank_e1600b_solarleistung
+                name: Solarleistung
+              - entity: sensor.battery_power_in_b
+              - entity: sensor.solarbank_e1600b_akkuleistung
+                name: Akkuleistung
+              - entity: sensor.battery_power_out_b
+              - entity: sensor.solarbank_e1600b_betriebszustand
+                name: Betriebszustand
+              - entity: sensor.solarbank_e1600b_ladestand
+                name: Ladestand
+              - entity: sensor.solarbank_e1600b_akkuenergie
+                name: Akkuenergie
+              - entity: sensor.solarbank_e1600b_einspeisevorgabe
+                name: Einspeisevorgabe
+              - entity: sensor.solarbank_e1600b_einspeiseleistung
+                name: Einspeiseleistung
+              - entity: sensor.solarbank_e1600b_cloud_zustand
+                name: Cloud Zustand
+              - entity: sensor.solarbank_e1600_wifi_2
+                name: WiFi Verbindung
+            title: Solarbank E1600B
+            state_color: true
+      - type: vertical-stack
+        cards:
+          - type: horizontal-stack
+            cards:
+              - type: entity
+                entity: sensor.solarbank_e1600b_solarleistung
+                name: Solar->
+              - type: entity
+                entity: sensor.solarbank_e1600b_akkuleistung
+                name: '->Akku'
+              - type: entity
+                entity: sensor.stecker_8_power
+                name: '->Haus'
+                icon: mdi:home-lightning-bolt-outline
+          - type: entities
+            entities:
+              - entity: switch.solarbank_e1600b_erlaube_leistungsabgabe
+                name: Erlaube Leistungsabgabe
+              - entity: button.solarbank_e1600b_details_aktualisieren
+                name: Details aktualisieren
+                icon: mdi:cog-refresh
+              - entity: number.solarbank_e1600b_system_einspeisevorgabe
+                name: System Einspeisevorgabe
+              - entity: number.solarbank_e1600b_ladeprioritatslimit
+                name: Ladeprioritätslimit
+              - entity: switch.solarbank_e1600b_auto_upgrade
+                name: Auto-Upgrade
+              - entity: select.solarbank_e1600b_ladestandreserve
+                name: Ladestandreserve
+              - entity: number.system_solix1600b_kwh_preis
+                name: kWh Preis
+            title: Solarbank E1600
+            state_color: true
+            show_header_toggle: false
+          - chart_type: line
+            period: 5minute
+            type: statistics-graph
+            entities:
+              - sensor.solarbank_e1600b_solarleistung
+              - sensor.solarbank_e1600b_einspeiseleistung
+              - sensor.stecker_8_power
+              - sensor.solarbank_e1600b_akkuleistung
+            stat_types:
+              - max
+            days_to_show: 1
+            hide_legend: false
+            min_y_axis: 0
+    visible:
+      - user: c31d8219ef5148658230b1eaa2b19120
+      - user: 604d88cc9c3340c2831508d81ef0a996
+      - user: 75e49e40b76e4afbb0355c3e14a2ab28
+  - title: WVC800
+    path: wvc800
+    icon: ''
+    cards:
+      - type: gauge
+        entity: sensor.wvc800_output_power
+        max: 850
+        needle: true
+        name: WVC800 Leistung aktuell
+        severity:
+          green: 0
+          yellow: 600
+          red: 750
+        visibility:
+          - condition: state
+            entity: sensor.wvc800_output_power
+            state_not: unavailable
+      - type: entities
+        entities:
+          - entity: sensor.wvc800_output_power
+            name: Eingespeiste Leistung
+            secondary_info: last-updated
+          - entity: sensor.wvc800_temperature
+            name: Temperatur
+          - entity: sensor.wvc800_daily_energy
+            name: Daily Energy
+          - entity: sensor.wvc800_total_energy
+            name: Total Energy
+          - entity: sensor.wvc800_zero_power_adj
+            name: Zero Power ADJ
+          - entity: sensor.wvc800_pv_power
+            name: PV Leistung
+          - entity: sensor.wvc800_pv_voltage
+            name: PV Spannung
+            icon: mdi:solar-panel
+          - entity: sensor.wvc800_pv_current
+            name: PV Strom
+            icon: mdi:solar-panel
+          - entity: sensor.wvc800_ac_voltage
+            name: Netz Spannung
+            icon: mdi:transmission-tower
+          - entity: sensor.wvc800_ac_current
+            name: Netz Einspeisestrom
+            icon: mdi:transmission-tower
+        title: WVC-800 Energiewerte
+        state_color: true
+      - type: entities
+        entities:
+          - entity: binary_sensor.wvc800_power_generation
+            name: Energie Einspeisung
+          - entity: sensor.wvc800_wvc_state
+            name: Status
+          - entity: sensor.wvc800_power_limit
+            name: Power Limit
+          - entity: sensor.wvc800_efficiency
+            name: Effizienz
+          - entity: sensor.wvc800_start_time
+            name: Anlauf-Zeit
+          - entity: sensor.wvc800_derating_temperature
+            name: Derating Temperatur
+          - entity: sensor.wvc800_c02_reduction
+            name: CO2 Einsparung
+          - entity: sensor.wvc800_planting_trees
+            name: Gepflanzte Bäume
+        title: Betriebswerte
+        state_color: true
+      - type: entities
+        entities:
+          - entity: button.wvc800_power_on_off
+            type: button
+            name: Einspeisung EIN/AUS
+            tap_action:
+              action: toggle
+              confirmation:
+                text: Soll die Einspeisung wirklich umgeschaltet werden?
+          - entity: number.wvc800_set_power_adj
+            name: Ausgangsleistung
+          - entity: number.wvc800_set_start_time
+            name: Start Einspeisung
+          - entity: number.wvc800_set_derating_temperature
+            name: Derating Temperatur
+          - entity: number.wvc800_set_0_power_adj
+            name: 0-Watt Einspeisung
+          - entity: select.wvc800_set_channel
+            name: Set Channel
+          - entity: select.wvc800_set_model
+            name: Set Model
+          - entity: button.wvc800_energy_clear
+            type: button
+            name: Energy Clear
+            tap_action:
+              action: toggle
+              confirmation:
+                text: Soll die Energiebilanz wirklich gelöscht werden?
+          - entity: switch.wvc800_restart
+            type: button
+            name: Restart (ESP07S)
+            tap_action:
+              action: toggle
+              confirmation:
+                text: Soll der ESP wirklich neu gestartet werden?
+        title: Einstellungen
+      - type: entities
+        entities:
+          - entity: binary_sensor.wvc800_wifi_status
+            secondary_info: last-changed
+          - entity: sensor.wvc800_wifi_percent
+            name: WLAN Signalstärke
+            secondary_info: none
+          - entity: sensor.wvc800_wvc_model
+            name: WVC Model
+          - entity: sensor.wvc800_wvc_channel
+            name: WVC Channel
+          - entity: sensor.wvc800_uart_tx
+            name: UART TX
+          - entity: sensor.wvc800_vcc_spannung
+            name: Elektronik Spannung
+        title: Betriebszustände
+        state_color: true
+      - chart_type: line
+        period: 5minute
+        type: statistics-graph
+        entities:
+          - sensor.stecker_8_power
+          - sensor.wvc800_output_power
+        stat_types:
+          - max
+        days_to_show: 1
+        title: Leistung (max)
+        hide_legend: false
+        min_y_axis: 0
+      - chart_type: line
+        period: 5minute
+        type: statistics-graph
+        entities:
+          - sensor.aussentemperatur
+          - sensor.wvc800_temperature
+          - sensor.auriol_ahfl_1_temperatur
+        days_to_show: 1
+        stat_types:
+          - max
+        title: Temperatur (max)
+        hide_legend: false
+    visible:
+      - user: 604d88cc9c3340c2831508d81ef0a996
+      - user: 75e49e40b76e4afbb0355c3e14a2ab28
+  - title: WVC600
+    path: wvc600
+    icon: ''
+    cards:
+      - type: gauge
+        entity: sensor.wvc600_output_power
+        max: 850
+        needle: true
+        name: WVC600 Leistung aktuell
+        severity:
+          green: 0
+          yellow: 600
+          red: 750
+        visibility:
+          - condition: state
+            entity: sensor.wvc600_output_power
+            state_not: unavailable
+      - type: entities
+        entities:
+          - entity: sensor.wvc600_output_power
+            name: Eingespeiste Leistung
+            secondary_info: last-updated
+          - entity: sensor.wvc600_temperature
+            name: Temperatur
+          - entity: sensor.wvc600_daily_energy
+            name: Daily Energy
+          - entity: sensor.wvc600_total_energy
+            name: Total Energy
+          - entity: sensor.wvc600_zero_power_adj
+            name: Zero Power ADJ
+          - entity: sensor.wvc600_pv_power
+            name: PV Leistung
+          - entity: sensor.wvc600_pv_voltage
+            name: PV Spannung
+            icon: mdi:solar-panel
+          - entity: sensor.wvc600_pv_current
+            name: PV Strom
+            icon: mdi:solar-panel
+          - entity: sensor.wvc600_ac_voltage
+            name: Netz Spannung
+            icon: mdi:transmission-tower
+          - entity: sensor.wvc600_ac_current
+            name: Netz Einspeisestrom
+            icon: mdi:transmission-tower
+        title: WVC-600 Energiewerte
+        state_color: true
+      - type: entities
+        entities:
+          - entity: binary_sensor.wvc600_power_generation
+            name: Energie Einspeisung
+          - entity: sensor.wvc600_wvc_state
+            name: Status
+          - entity: sensor.wvc600_power_limit
+            name: Power Limit
+          - entity: sensor.wvc600_efficiency
+            name: Effizienz
+          - entity: sensor.wvc600_start_time
+            name: Anlauf-Zeit
+          - entity: sensor.wvc600_derating_temperature
+            name: Derating Temperatur
+          - entity: sensor.wvc600_c02_reduction
+            name: C02 Einsparung
+          - entity: sensor.wvc600_planting_trees
+            name: Gepflanzte Bäume
+        title: Betriebswerte
+        state_color: true
+      - type: entities
+        entities:
+          - entity: button.wvc600_power_on_off
+            type: button
+            name: Einspeisung EIN/AUS
+            tap_action:
+              action: toggle
+              confirmation:
+                text: Soll die Einspeisung wirklich umgeschaltet werden?
+          - entity: number.wvc600_set_power_adj
+            name: Ausgangsleistung
+          - entity: number.wvc600_set_start_time
+            name: Start Einspeisung
+          - entity: number.wvc600_set_derating_temperature
+            name: Derating Temperatur
+          - entity: number.wvc600_set_0_power_adj
+            name: 0-Watt Einspeisung
+          - entity: select.wvc600_set_channel
+            name: Set Channel
+          - entity: select.wvc600_set_model
+            name: Set Model
+          - entity: button.wvc600_energy_clear
+            type: button
+            name: Energy Clear
+            tap_action:
+              action: toggle
+              confirmation:
+                text: Soll die Energiebilanz wirklich gelöscht werden?
+          - entity: switch.wvc600_restart
+            type: button
+            name: Restart (ESP07S)
+            tap_action:
+              action: toggle
+              confirmation:
+                text: Soll der ESP wirklich neu gestartet werden?
+        title: Einstellungen
+      - type: entities
+        entities:
+          - entity: binary_sensor.wvc600_wifi_status
+            secondary_info: last-changed
+          - entity: sensor.wvc600_wifi_percent
+            name: WLAN Signalstärke
+            secondary_info: none
+          - entity: sensor.wvc600_wvc_model
+            name: WVC Model
+          - entity: sensor.wvc600_wvc_channel
+            name: WVC Channel
+          - entity: sensor.wvc600_uart_tx
+            name: UART TX
+          - entity: sensor.wvc600_vcc_spannung
+            name: Elektronik Spannung
+        title: Betriebszustände
+        state_color: true
+      - chart_type: line
+        period: 5minute
+        type: statistics-graph
+        entities:
+          - sensor.stecker_8_power
+          - sensor.wvc600_output_power
+        stat_types:
+          - max
+        days_to_show: 1
+        title: Leistung (max)
+        hide_legend: false
+        min_y_axis: 0
+      - chart_type: line
+        period: 5minute
+        type: statistics-graph
+        entities:
+          - sensor.aussentemperatur
+          - sensor.wvc600_temperature
+          - sensor.auriol_ahfl_1_temperatur
+        days_to_show: 1
+        stat_types:
+          - max
+        hide_legend: false
+        title: Temperatur (max)
+    visible:
+      - user: 604d88cc9c3340c2831508d81ef0a996
+      - user: 75e49e40b76e4afbb0355c3e14a2ab28
+  - title: WVC700
+    path: wvc700
+    visible:
+      - user: 604d88cc9c3340c2831508d81ef0a996
+      - user: 75e49e40b76e4afbb0355c3e14a2ab28
+    cards:
+      - type: gauge
+        entity: sensor.wvc700_output_power
+        max: 850
+        needle: true
+        name: WVC700 Leistung aktuell
+        severity:
+          green: 0
+          yellow: 600
+          red: 750
+        visibility:
+          - condition: state
+            entity: sensor.wvc700_output_power
+            state_not: unavailable
+      - type: entities
+        entities:
+          - entity: sensor.wvc700_output_power
+            name: Eingespeiste Leistung
+            secondary_info: last-updated
+          - entity: sensor.wvc700_temperature
+            name: Temperatur
+          - entity: sensor.wvc700_daily_energy
+            name: Daily Energy
+          - entity: sensor.wvc700_total_energy
+            name: Total Energy
+          - entity: sensor.wvc700_zero_power_adj
+            name: Zero Power ADJ
+          - entity: sensor.wvc700_pv_power
+            name: PV Leistung
+          - entity: sensor.wvc700_pv_voltage
+            name: PV Spannung
+            icon: mdi:solar-panel
+          - entity: sensor.wvc700_pv_current
+            name: PV Strom
+            icon: mdi:solar-panel
+          - entity: sensor.wvc700_ac_voltage
+            name: Netz Spannung
+            icon: mdi:transmission-tower
+          - entity: sensor.wvc700_ac_current
+            name: Netz Einspeisestrom
+            icon: mdi:transmission-tower
+        title: WVC-700 Energiewerte
+        state_color: true
+      - type: entities
+        entities:
+          - entity: binary_sensor.wvc700_power_generation
+            name: Energie Einspeisung
+          - entity: sensor.wvc700_wvc_state
+            name: Status
+          - entity: sensor.wvc700_power_limit
+            name: Power Limit
+          - entity: sensor.wvc700_efficiency
+            name: Effizienz
+          - entity: sensor.wvc700_start_time
+            name: Anlauf-Zeit
+          - entity: sensor.wvc700_derating_temperature
+            name: Derating Temperatur
+          - entity: sensor.wvc700_c02_reduction
+            name: CO2 Einsparung
+          - entity: sensor.wvc700_planting_trees
+            name: Gepflanzte Bäume
+        title: Betriebswerte
+        state_color: true
+      - type: entities
+        entities:
+          - entity: button.wvc700_power_on_off
+            type: button
+            name: Einspeisung EIN/AUS
+            tap_action:
+              action: toggle
+              confirmation:
+                text: Soll die Einspeisung wirklich umgeschaltet werden?
+          - entity: number.wvc700_set_power_adj
+            name: Ausgangsleistung
+          - entity: number.wvc700_set_start_time
+            name: Start Einspeisung
+          - entity: number.wvc700_set_derating_temperature
+            name: Derating Temperatur
+          - entity: number.wvc700_set_0_power_adj
+            name: 0-Watt Einspeisung
+          - entity: select.wvc700_set_channel
+            name: Set Channel
+          - entity: select.wvc700_set_model
+            name: Set Model
+          - entity: button.wvc700_energy_clear
+            type: button
+            name: Energy Clear
+            tap_action:
+              action: toggle
+              confirmation:
+                text: Soll die Energiebilanz wirklich gelöscht werden?
+          - entity: switch.wvc700_restart
+            type: button
+            name: Restart (ESP07S)
+            tap_action:
+              action: toggle
+              confirmation:
+                text: Soll der ESP wirklich neu gestartet werden?
+        title: Einstellungen
+      - type: entities
+        entities:
+          - entity: binary_sensor.wvc700_wifi_status
+            secondary_info: last-changed
+          - entity: sensor.wvc700_wifi_percent
+            name: WLAN Signalstärke
+            secondary_info: none
+          - entity: sensor.wvc700_wvc_model
+            name: WVC Model
+          - entity: sensor.wvc700_wvc_channel
+            name: WVC Channel
+          - entity: sensor.wvc700_uart_tx
+            name: UART TX
+          - entity: sensor.wvc700_vcc_spannung
+            name: Elektronik Spannung
+        title: Betriebszustände
+        state_color: true
+      - chart_type: line
+        period: 5minute
+        type: statistics-graph
+        entities:
+          - sensor.stecker_8_power
+          - sensor.wvc700_output_power
+        stat_types:
+          - max
+        days_to_show: 1
+        title: Leistung (max)
+        hide_legend: false
+        min_y_axis: 0
+      - chart_type: line
+        period: 5minute
+        type: statistics-graph
+        entities:
+          - sensor.aussentemperatur
+          - sensor.wvc700_temperature
+          - sensor.auriol_ahfl_1_temperatur
+        days_to_show: 1
+        stat_types:
+          - max
+        title: Temperatur (max)
+        hide_legend: false
