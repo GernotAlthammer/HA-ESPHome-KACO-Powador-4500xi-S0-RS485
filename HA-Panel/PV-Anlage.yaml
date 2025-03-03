@@ -1,0 +1,768 @@
+title: PV-Anlage
+views:
+  - path: default_view
+    title: PV-Anlage
+    icon: mdi:solar-panel-large
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: gauge
+            entity: sensor.pv_anlage_gesamt_leistung
+            needle: true
+            name: PV-Anlage Leistung aktuell
+            severity:
+              green: 0
+              yellow: 7
+              red: 7.8
+            max: 8.6
+          - type: entities
+            entities:
+              - entity: sensor.pv_anlage_gesamt_leistung
+                name: PV Leistung Gesamt
+                secondary_info: last-changed
+                icon: ''
+              - entity: sensor.pv_pulse_1
+                name: PV Kreis 1
+                secondary_info: last-changed
+              - entity: sensor.pv_pulse_2
+                name: PV Kreis 2
+                secondary_info: last-changed
+            title: PV Anlage 7.8 kW
+            state_color: true
+          - type: entities
+            entities:
+              - entity: sensor.pv_anlage_gesamt_energie
+                name: PV Energie Gesamt
+                secondary_info: last-changed
+              - entity: sensor.inverter_1_daily_energy
+                name: Inverter 1 Energie
+                secondary_info: last-changed
+              - entity: sensor.inverter_2_daily_energy
+                name: Inverter 2 Energie
+                secondary_info: last-changed
+            state_color: true
+          - type: entities
+            entities:
+              - entity: binary_sensor.pv_zaehler_wifi_status
+              - entity: sensor.inverter_1_daily_saving
+                name: Inverter 1 Vergütung
+              - entity: sensor.inverter_2_daily_saving
+                name: Inverter 2 Vergütung
+            state_color: true
+          - type: markdown
+            content: >-
+              [**HA**](/lovelace/zaehler-haus)+[**BK**](/balkon-kraft/default_view)+[**SOLIX**](/balkon-kraft/solix)
+              - [**WVC800**](/balkon-kraft/wvc800) -
+              [**WVC600**](/balkon-kraft/wvc600) -
+              [**WVC700**](/balkon-kraft/wvc700) 
+          - type: entities
+            entities:
+              - entity: sensor.ha_total_active_power
+                name: Hausverbrauch Gesamt
+              - entity: sensor.hausverbrauch_tagesenergie
+      - type: energy-grid-neutrality-gauge
+      - type: entities
+        entities:
+          - entity: sensor.energy_production_today
+            name: Energie Heute gesamt
+          - entity: sensor.energy_current_hour
+            name: Energie Aktuell
+          - entity: sensor.energy_next_hour
+            name: Energie in 1 Std.
+          - entity: sensor.energy_production_tomorrow
+            name: Energie Morgen gesamt
+          - entity: sensor.power_production_now
+            name: Leistung jetzt
+          - entity: sensor.power_production_next_hour
+            name: Leistung in 1 Std.
+          - entity: sensor.power_production_next_12hours
+            name: Leistung in 12 Std.
+          - entity: sensor.power_production_next_24hours
+            name: Leistung in 24 Std.
+          - entity: sensor.power_highest_peak_time_today
+            name: Max. Leistung Heute
+          - entity: sensor.power_highest_peak_time_tomorrow
+            name: Max-. Leistung Morgen.
+        title: PV Prognose
+      - chart_type: line
+        period: 5minute
+        type: statistics-graph
+        entities:
+          - sensor.inverter_1_supplied_power
+          - sensor.inverter_2_supplied_power
+          - sensor.pv_anlage_gesamt_leistung
+          - sensor.power_production_now
+        stat_types:
+          - mean
+        days_to_show: 1
+        hide_legend: false
+        logarithmic_scale: false
+        unit: kW
+        min_y_axis: 0
+      - chart_type: line
+        period: 5minute
+        type: statistics-graph
+        entities:
+          - sensor.inverter_1_device_temperature
+          - sensor.inverter_2_device_temperature
+          - sensor.temperatur_garage
+          - sensor.aussentemperatur
+        stat_types:
+          - max
+        days_to_show: 1
+      - chart_type: line
+        period: 5minute
+        type: statistics-graph
+        entities:
+          - sensor.inverter_1_grid_voltage
+          - sensor.inverter_2_grid_voltage
+          - sensor.stecker_8_spannung
+        stat_types:
+          - max
+        days_to_show: 1
+        hide_legend: false
+      - chart_type: line
+        period: 5minute
+        type: statistics-graph
+        entities:
+          - sensor.inverter_1_generator_voltage
+          - sensor.inverter_2_generator_voltage
+        stat_types:
+          - max
+        days_to_show: 1
+      - chart_type: bar
+        period: day
+        type: statistics-graph
+        entities:
+          - sensor.inverter_1_daily_energy
+          - sensor.inverter_2_daily_energy
+          - sensor.pv_anlage_gesamt_energie
+        days_to_show: 7
+        stat_types:
+          - state
+        hide_legend: false
+        logarithmic_scale: false
+        min_y_axis: 0
+        unit: kWh
+      - chart_type: line
+        period: 5minute
+        type: statistics-graph
+        entities:
+          - sensor.sunlight_helligkeit
+        days_to_show: 1
+        stat_types:
+          - mean
+        title: Helligkeit
+  - title: KACO
+    path: kaco
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: picture-elements
+            image: /local/kaco/home_kaco.png
+            elements:
+              - type: image
+                entity: sensor.pv_einspeisung
+                state_image:
+                  'on': /local/kaco/line_o-u.gif
+                  'off': /local/kaco/kaco_null.png
+                style:
+                  top: 57%
+                  left: 31.7%
+                  width: 18%
+                tap_action:
+                  action: none
+                hold_action:
+                  action: none
+              - type: image
+                entity: sun.sun
+                title: Sonnenstand
+                state_image:
+                  above_horizon: /local/anker/sun-icon1.png
+                  below_horizon: /local/anker/moon-icon1.png
+                style:
+                  top: 8%
+                  left: 14%
+                  width: 13%
+                tap_action:
+                  action: none
+                hold_action:
+                  action: none
+              - type: image
+                entity: sensor.inverter_1_state
+                title: Status 2500xi
+                state_image:
+                  '0': /local/kaco/info.png
+                  '1': /local/anker/standby1.png
+                  '2': /local/anker/standby1.png
+                  '3': /local/anker/arrow_l2.png
+                  '4': /local/anker/arrow_l2.png
+                  '5': /local/anker/arrow_l2.png
+                  '6': /local/anker/arrow_l1.png
+                  '7': /local/anker/arrow_l1.png
+                  '8': /local/anker/arrow_l1.png
+                  '10': /local/kaco/warning.png
+                  '11': /local/kaco/warning.png
+                  '12': /local/kaco/warning.png
+                  '13': /local/kaco/warning.png
+                  '14': /local/kaco/warning.png
+                  '15': /local/kaco/info.png
+                  '18': /local/kaco/error.png
+                  '19': /local/kaco/error.png
+                  '30': /local/kaco/error.png
+                  '31': /local/kaco/error.png
+                  '32': /local/kaco/error.png
+                  '33': /local/kaco/error.png
+                  '34': /local/kaco/error.png
+                  unknown: /local/anker/unknown1.png
+                style:
+                  top: 47.5%
+                  left: 75%
+                  width: 8%
+                tap_action:
+                  action: none
+                hold_action:
+                  action: none
+              - type: image
+                entity: sensor.inverter_2_state
+                title: Status 4500xi
+                state_image:
+                  '0': /local/kaco/info.png
+                  '1': /local/anker/standby1.png
+                  '2': /local/anker/standby1.png
+                  '3': /local/anker/arrow_l2.png
+                  '4': /local/anker/arrow_l2.png
+                  '5': /local/anker/arrow_l2.png
+                  '6': /local/anker/arrow_l1.png
+                  '7': /local/anker/arrow_l1.png
+                  '8': /local/anker/arrow_l1.png
+                  '10': /local/kaco/warning.png
+                  '11': /local/kaco/warning.png
+                  '12': /local/kaco/warning.png
+                  '13': /local/kaco/warning.png
+                  '14': /local/kaco/warning.png
+                  '15': /local/kaco/info.png
+                  '18': /local/kaco/error.png
+                  '19': /local/kaco/error.png
+                  '30': /local/kaco/error.png
+                  '31': /local/kaco/error.png
+                  '32': /local/kaco/error.png
+                  '33': /local/kaco/error.png
+                  '34': /local/kaco/error.png
+                  unknown: /local/anker/unknown1.png
+                style:
+                  top: 44.5%
+                  left: 88%
+                  width: 8%
+                tap_action:
+                  action: none
+                hold_action:
+                  action: none
+              - type: state-label
+                entity: sensor.pv_anlage_gesamt_leistung
+                title: PV-Anlage Einspeisung ins Stromnetz
+                style:
+                  top: 64.5%
+                  left: 42%
+                  color: blue
+                  font-size: 18px
+              - type: image
+                image: /local/kaco/grid-out1.png
+                style:
+                  top: 61%
+                  left: 40%
+                  width: 6%
+                tap_action:
+                  action: none
+                hold_action:
+                  action: none
+              - type: state-label
+                entity: sensor.ha_total_active_power
+                title: Aktueller Verbrauch aus dem Stromnetz
+                style:
+                  top: 64.5%
+                  left: 79%
+                  color: blue
+                  font-size: 18px
+              - type: image
+                image: /local/kaco/grid-in1.png
+                style:
+                  top: 61%
+                  left: 77%
+                  width: 6%
+                tap_action:
+                  action: none
+                hold_action:
+                  action: none
+              - type: state-label
+                entity: sensor.inverter_1_zustand
+                title: Betriebsmodus 2500xi
+                style:
+                  top: 18.5%
+                  left: 48%
+                  color: white
+                  font-size: 10px
+                tap_action:
+                  action: none
+                hold_action:
+                  action: none
+              - type: state-label
+                entity: sensor.inverter_2_zustand
+                title: Betriebsmodus 4500xi
+                style:
+                  top: 15%
+                  left: 75%
+                  color: white
+                  font-size: 10px
+                tap_action:
+                  action: none
+                hold_action:
+                  action: none
+              - type: state-label
+                entity: sensor.inverter_1_generator_voltage
+                title: PV-Spannumg
+                style:
+                  top: 29.5%
+                  left: 81%
+                  color: blue
+                  font-size: 12px
+              - type: state-label
+                entity: sensor.inverter_2_generator_voltage
+                title: PV-Spannumg
+                style:
+                  top: 26.5%
+                  left: 94%
+                  color: blue
+                  font-size: 12px
+              - type: state-label
+                entity: sensor.inverter_1_device_temperature
+                title: Interne Temperatur
+                style:
+                  top: 50%
+                  left: 75%
+                  color: blue
+                  font-size: 12px
+              - type: state-label
+                entity: sensor.inverter_2_device_temperature
+                title: Interne Temperatur
+                style:
+                  top: 47%
+                  left: 89.5%
+                  color: blue
+                  font-size: 12px
+              - type: state-label
+                entity: sensor.inverter_1_grid_voltage
+                title: Netzspannung 1
+                style:
+                  top: 53.5%
+                  left: 73.7%
+                  color: blue
+                  font-size: 12px
+              - type: state-label
+                entity: sensor.inverter_2_grid_voltage
+                title: Netzspannung 2
+                style:
+                  top: 50.5%
+                  left: 88%
+                  color: blue
+                  font-size: 12px
+              - type: state-label
+                entity: sensor.inverter_1_supplied_power
+                title: Leistung PV-Kreis 1
+                style:
+                  top: 5%
+                  left: 38%
+                  color: blue
+                  font-size: 18px
+              - type: state-label
+                entity: sensor.inverter_2_supplied_power
+                title: Leistung PV-Kreis 2
+                style:
+                  top: 5%
+                  left: 65.6%
+                  color: blue
+                  font-size: 18px
+              - type: state-label
+                entity: sensor.pv_anlage_gesamt_energie
+                title: Eingespeiste Gesamtenergie heute
+                style:
+                  top: 77.2%
+                  left: 62%
+                  color: black
+                  font-size: 22px
+              - type: state-label
+                entity: sensor.inverter_1_daily_saving
+                style:
+                  top: 93%
+                  left: 65%
+                  color: black
+                  font-size: 16px
+              - type: state-label
+                entity: sensor.inverter_2_daily_saving
+                style:
+                  top: 93%
+                  left: 83%
+                  color: black
+                  font-size: 16px
+              - type: state-label
+                entity: sensor.inverter_1_daily_energy
+                title: Inverter 2500xi
+                style:
+                  top: 93%
+                  left: 19%
+                  color: black
+                  font-size: 16px
+              - type: state-label
+                entity: sensor.inverter_2_daily_energy
+                title: Inverter 4500xi
+                style:
+                  top: 93%
+                  left: 42.5%
+                  color: black
+                  font-size: 16px
+              - type: state-label
+                entity: sensor.stecker_8_power
+                title: Einspeisung Balkonkraftwerk
+                style:
+                  top: 33.5%
+                  left: 35%
+                  color: white
+                  font-size: 12px
+          - type: markdown
+            content: >-
+              [**HA**](/lovelace/zaehler-haus)+[**BK**](/balkon-kraft/default_view)+[**SOLIX**](/balkon-kraft/solix)
+              - [**WVC800**](/balkon-kraft/wvc800) -
+              [**WVC600**](/balkon-kraft/wvc600) -
+              [**WVC700**](/balkon-kraft/wvc700) 
+      - type: entities
+        entities:
+          - entity: binary_sensor.pv_zaehler_wifi_status
+          - entity: button.pvz_inverter_1_data
+            name: PV Daten anfordern
+          - entity: sensor.inverter_1_daily_energy
+            name: Erzeugte Energie
+            secondary_info: last-updated
+          - entity: sensor.inverter_1_supplied_power
+            name: Eingespeiste Leistung
+            secondary_info: last-updated
+          - entity: sensor.inverter_1_efficiency
+            name: Effizienz
+          - entity: sensor.inverter_1_device_temperature
+            secondary_info: last-updated
+            name: Interne Temperatur
+          - entity: sensor.inverter_1_grid_voltage
+            name: Netz-Spannung
+          - entity: sensor.inverter_1_grid_current
+            name: Netz-Strom
+          - entity: sensor.inverter_1_generator_power
+            name: Generator-Leistung
+          - entity: sensor.inverter_1_generator_voltage
+            name: Generator-Spannung
+          - entity: sensor.inverter_1_generator_current
+            name: Generator-Strom
+          - entity: sensor.inverter_1_zustand
+            name: Betriebszustand
+          - entity: sensor.inverter_1_state
+            name: Betriebsstatus
+        title: Powador 2500xi - max 2.8 kW
+        state_color: true
+      - type: entities
+        entities:
+          - entity: binary_sensor.pv_zaehler_wifi_status
+          - entity: button.pvz_inverter_2_data
+            name: PV Daten anfordern
+          - entity: sensor.inverter_2_daily_energy
+            name: Erzeugte Energie
+            secondary_info: last-updated
+          - entity: sensor.inverter_2_supplied_power
+            name: Eingespeiste Leistung
+            secondary_info: last-updated
+          - entity: sensor.inverter_2_efficiency
+            name: Effizienz
+          - entity: sensor.inverter_2_device_temperature
+            secondary_info: last-updated
+            name: Interne Temperatur
+          - entity: sensor.inverter_2_grid_voltage
+            name: Netz-Spannung
+          - entity: sensor.inverter_2_grid_current
+            name: Netz-Strom
+          - entity: sensor.inverter_2_generator_power
+            name: Generator-Leistung
+            secondary_info: none
+          - entity: sensor.inverter_2_generator_voltage
+            name: Generator-Spannung
+          - entity: sensor.inverter_2_generator_current
+            name: Generator-Strom
+          - entity: sensor.inverter_2_zustand
+            name: Betriebszustand
+          - entity: sensor.inverter_2_state
+            name: Betriebsstatus
+        title: Powador 4500xi - max 5.0 kW
+        state_color: true
+  - title: INV-1
+    path: inverter-1
+    icon: ''
+    badges: []
+    cards:
+      - type: gauge
+        entity: sensor.pv_pulse_1
+        needle: true
+        name: Inverter 1 Leistung
+        severity:
+          green: 0
+          yellow: 2.5
+          red: 2.8
+        max: 3.1
+        visibility:
+          - condition: state
+            entity: sensor.pv_pulse_1
+            state_not: unknown
+      - type: gauge
+        entity: sensor.inverter_1_device_temperature
+        needle: true
+        segments:
+          - from: -5
+            to: 0
+            color: '#0000FF'
+          - from: 0
+            to: 5
+            color: '#007FFF'
+          - from: 5
+            to: 15
+            color: '#00BFFF'
+          - from: 15
+            to: 45
+            color: '#00FF00'
+          - from: 45
+            to: 75
+            color: '#7FFF00'
+          - from: 75
+            to: 85
+            color: '#FFFF00'
+          - from: 85
+            to: 90
+            color: '#FF7F00'
+          - from: 90
+            to: 95
+            color: '#FF0000'
+        max: 95
+        min: -5
+        name: Inverter 1 Geräte-Temperatur
+        visibility:
+          - condition: state
+            entity: sensor.inverter_1_device_temperature
+            state_not: unknown
+      - type: entities
+        entities:
+          - entity: sensor.inverter_1_supplied_power
+            name: Eingespeiste Leistung
+            secondary_info: last-updated
+          - entity: sensor.inverter_1_device_temperature
+            secondary_info: last-updated
+            name: Interne Temperatur
+          - entity: button.pvz_inverter_1_data
+            name: PV Daten anfordern
+          - entity: sensor.inverter_1_daily_energy
+            name: Erzeugte Energie
+            secondary_info: last-updated
+          - entity: sensor.inverter_1_daily_saving
+            name: Vergütung
+          - entity: sensor.inverter_1_efficiency
+            name: Effizienz
+          - entity: sensor.inverter_1_grid_voltage
+            name: Netz-Spannung
+          - entity: sensor.inverter_1_grid_current
+            name: Netz-Strom
+          - entity: sensor.inverter_1_generator_power
+            name: Generator-Leistung
+          - entity: sensor.inverter_1_generator_voltage
+            name: Generator-Spannung
+          - entity: sensor.inverter_1_generator_current
+            name: Generator-Strom
+          - entity: sensor.inverter_1_zustand
+            name: Betriebszustand
+          - entity: sensor.inverter_1_state
+            name: Betriebsstatus
+          - entity: binary_sensor.pv_zaehler_wifi_status
+        title: Powador 2500xi - max 2.8 kW
+        state_color: true
+      - chart_type: line
+        period: 5minute
+        type: statistics-graph
+        entities:
+          - sensor.inverter_1_supplied_power
+        stat_types:
+          - mean
+        days_to_show: 1
+        title: Eingespeiste Leistung (mittel)
+        hide_legend: true
+        logarithmic_scale: false
+        min_y_axis: 0
+      - chart_type: line
+        period: 5minute
+        type: statistics-graph
+        entities:
+          - sensor.inverter_1_device_temperature
+          - sensor.temperatur_garage
+        stat_types:
+          - max
+        days_to_show: 1
+        hide_legend: false
+        title: Geräte-Temperatur (max)
+      - chart_type: line
+        period: 5minute
+        type: statistics-graph
+        entities:
+          - sensor.inverter_1_generator_voltage
+        stat_types:
+          - max
+          - min
+          - mean
+        days_to_show: 1
+        hide_legend: true
+        title: Inverter Spannung
+      - chart_type: line
+        period: 5minute
+        type: statistics-graph
+        entities:
+          - sensor.sunlight_helligkeit
+        days_to_show: 1
+        stat_types:
+          - mean
+        title: Helligkeit (mittel)
+        hide_legend: true
+        min_y_axis: 0
+  - title: INV-2
+    path: inverter-2
+    icon: ''
+    badges: []
+    cards:
+      - type: gauge
+        entity: sensor.pv_pulse_2
+        needle: true
+        name: Inverter 2 Leistung
+        severity:
+          green: 0
+          yellow: 4.5
+          red: 5
+        max: 5.5
+        visibility:
+          - condition: state
+            entity: sensor.pv_pulse_2
+            state_not: unknown
+      - type: gauge
+        entity: sensor.inverter_2_device_temperature
+        needle: true
+        segments:
+          - from: -5
+            to: 0
+            color: '#0000FF'
+          - from: 0
+            to: 5
+            color: '#007FFF'
+          - from: 5
+            to: 15
+            color: '#00BFFF'
+          - from: 15
+            to: 45
+            color: '#00FF00'
+          - from: 45
+            to: 75
+            color: '#7FFF00'
+          - from: 75
+            to: 85
+            color: '#FFFF00'
+          - from: 85
+            to: 90
+            color: '#FF7F00'
+          - from: 90
+            to: 95
+            color: '#FF0000'
+        max: 95
+        min: -5
+        name: Inverter 2 Geräte-Temperatur
+        visibility:
+          - condition: state
+            entity: sensor.inverter_2_device_temperature
+            state_not: unknown
+      - type: entities
+        entities:
+          - entity: sensor.inverter_2_supplied_power
+            name: Eingespeiste Leistung
+            secondary_info: last-updated
+          - entity: sensor.inverter_2_device_temperature
+            secondary_info: last-updated
+            name: Interne Temperatur
+          - entity: button.pvz_inverter_2_data
+            name: PV Daten anfordern
+          - entity: sensor.inverter_2_daily_energy
+            name: Erzeugte Energie
+            secondary_info: last-updated
+          - entity: sensor.inverter_2_daily_saving
+            name: Vergütung
+          - entity: sensor.inverter_2_efficiency
+            name: Effizienz
+          - entity: sensor.inverter_2_grid_voltage
+            name: Netz-Spannung
+          - entity: sensor.inverter_2_grid_current
+            name: Netz-Strom
+          - entity: sensor.inverter_2_generator_power
+            name: Generator-Leistung
+            secondary_info: none
+          - entity: sensor.inverter_2_generator_voltage
+            name: Generator-Spannung
+          - entity: sensor.inverter_2_generator_current
+            name: Generator-Strom
+          - entity: sensor.inverter_2_zustand
+            name: Betriebszustand
+          - entity: sensor.inverter_2_state
+            name: Betriebsstatus
+          - entity: binary_sensor.pv_zaehler_wifi_status
+        title: Powador 4500xi - max 5.0 kW
+        state_color: true
+      - chart_type: line
+        period: 5minute
+        type: statistics-graph
+        entities:
+          - sensor.inverter_2_supplied_power
+        stat_types:
+          - mean
+        days_to_show: 1
+        title: Eingespeiste Leistung (mittel)
+        hide_legend: true
+        min_y_axis: 0
+        fit_y_data: false
+      - chart_type: line
+        period: 5minute
+        type: statistics-graph
+        entities:
+          - sensor.inverter_2_device_temperature
+          - sensor.temperatur_garage
+        stat_types:
+          - max
+        days_to_show: 1
+        hide_legend: false
+        title: Geräte-Temperatur (max)
+      - chart_type: line
+        period: 5minute
+        type: statistics-graph
+        entities:
+          - sensor.inverter_2_generator_voltage
+        stat_types:
+          - max
+          - min
+          - mean
+        days_to_show: 1
+        hide_legend: true
+        title: Inverter Spannung
+      - chart_type: line
+        period: 5minute
+        type: statistics-graph
+        entities:
+          - sensor.sunlight_helligkeit
+        days_to_show: 1
+        stat_types:
+          - mean
+        title: Helligkeit (mittel)
+        hide_legend: true
+        min_y_axis: 0
