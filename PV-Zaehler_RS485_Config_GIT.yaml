@@ -19,6 +19,7 @@
 ### 2024-06-29 Update OTA for ESPhome V6
 ### 2024-07-13 Status-Texte korrigiert
 ### 2024-09-28 Sscanf gekürzt um ZustandText
+### 2025-03-08 Revoved Custom Component for uart_read_line_sensor.h
 ###
 esphome:
   name: pv-s0-zaehler1
@@ -31,8 +32,8 @@ esphome:
   #platformio_options:
   #  # Change CPU speed from 80 MHz to 160 MHz
   #  board_build.f_cpu: 160000000L
-  includes:
-    - uart_read_line_sensor.h
+  #includes:
+  #  - uart_read_line_sensor.h
 
 esp8266:
   board: esp01_1m
@@ -201,10 +202,19 @@ uart:
       delimiter: "\n"
 
     sequence:
-      - lambda: UARTDebug::log_string(direction, bytes);  //Still log the data
+      # - lambda: UARTDebug::log_string(direction, bytes);  //Still log the data
       # - lambda: UARTDebug::log_hex(direction, bytes, ':');
       # - lambda: UARTDebug::log_int(direction, bytes, ',');
       # - lambda: UARTDebug::log_binary(direction, bytes, ';');
+      - lambda: |-
+          UARTDebug::log_string(direction, bytes);  //Still log the data
+                   
+          //Example to convert uart text to string
+          std::string str(bytes.begin(), bytes.end());
+
+          //watch for potential problems with non printable or special characters in string
+          id(rawString).publish_state(str.c_str());
+
 
 
 
@@ -671,117 +681,119 @@ text_sensor:
     entity_category: "diagnostic"
 
 
-  - platform: custom
-    lambda: |-
-      auto my_custom_sensor = new UartReadLineSensor(id(pvz_rs485_uart));
-      App.register_component(my_custom_sensor);
-      return {my_custom_sensor};
-    text_sensors:
-      id: "rawString"
-      name: "Raw String"
-      internal: true
-      on_value:
-        then:
-          - lambda: |-
-              String data = id(rawString).state.c_str();
-              if (data.startsWith("*")) {
-                String deviceId = "?000";
-                int state = 0;
-                float generatorVoltage = 0;  // Convert to integer with unit V
-                float generatorCurrent = 0;  // Convert to integer with unit A
-                int generatorPower = 0;  // Convert to integer with unit W
-                float gridVoltage = 0;  // Convert to integer with unit V
-                float gridCurrent = 0;  // Convert to integer with unit A
-                int suppliedPower = 0;  // Convert to integer with unit W
-                float deviceTemperature = 0;  // Convert to integer with unit °C
-                int dailyEnergy = 0;  // Convert to integer with unit Wh
-                String parityByte = "0";
-                String InvDeviceName = "------";
-                String ZustandText = "-                                                           ";
+  #- platform: custom
+  #  lambda: |-
+  #    auto my_custom_sensor = new UartReadLineSensor(id(pvz_rs485_uart));
+  #    App.register_component(my_custom_sensor);
+  #    return {my_custom_sensor};
+  #  text_sensors:
 
-                sscanf(data.c_str(),"%s %i %f %f %i %f %f %i %f %i %9s %s", &deviceId, &state, &generatorVoltage, &generatorCurrent, &generatorPower, &gridVoltage, &gridCurrent, &suppliedPower, &deviceTemperature, &dailyEnergy, &parityByte, &InvDeviceName);
+  - platform: template
+    id: "rawString"
+    name: "Raw String"
+    internal: true
+    on_value:
+      then:
+        - lambda: |-
+            String data = id(rawString).state.c_str();
+            if (data.startsWith("*")) {
+              String deviceId = "?000";
+              int state = 0;
+              float generatorVoltage = 0;  // Convert to integer with unit V
+              float generatorCurrent = 0;  // Convert to integer with unit A
+              int generatorPower = 0;  // Convert to integer with unit W
+              float gridVoltage = 0;  // Convert to integer with unit V
+              float gridCurrent = 0;  // Convert to integer with unit A
+              int suppliedPower = 0;  // Convert to integer with unit W
+              float deviceTemperature = 0;  // Convert to integer with unit °C
+              int dailyEnergy = 0;  // Convert to integer with unit Wh
+              String parityByte = "0";
+              String InvDeviceName = "------";
+              String ZustandText = "-                                                           ";
 
-                switch (state) {
-                  case 0: ZustandText = "Wechselrichter hat sich gerade eingeschaltet";
-                    break;
-                  case 1: ZustandText = "Warten auf Start";
-                    break;
-                  case 2: ZustandText = "Warten auf Ausschalten";
-                    break;
-                  case 3: ZustandText = "Konstantspannungsregler";
-                    break;
-                  case 4: ZustandText = "MPP-Regler, ständige Suchbewegung";
-                    break;
-                  case 5: ZustandText = "MPP-Regler, ohne Suchbewegung";
-                    break;
-                  case 6: ZustandText = "Wartemodus vor Einspeisung, Netz- und Solarspannung testen";
-                    break;
-                  case 7: ZustandText = "Wartemodus vor Selbsttest, Netz- und Solarspannung testen";
-                    break;
-                  case 8: ZustandText = "Selbsttest der Relais";
-                    break;
-                  case 10: ZustandText = "Übertemperaturabschaltung";
-                    break;
-                  case 11: ZustandText = "Leistungsbegrenzung";
-                    break;
-                  case 12: ZustandText = "Überlastabschaltung";
-                    break;
-                  case 13: ZustandText = "Überspannungsabschaltung";
-                    break;
-                  case 14: ZustandText = "Netzstörung (3-phasige Überwachung)";
-                    break;
-                  case 15: ZustandText = "Übergang zur Nachtabschaltung";
-                    break;
-                  case 18: ZustandText = "RCD Typ B-Abschaltung";
-                    break;
-                  case 19: ZustandText = "Isolationswiderstand zu gering";
-                    break;
-                  case 30: ZustandText = "Störung Messwandler";
-                    break;
-                  case 31: ZustandText = "Fehler RCD Typ B-Modul";
-                    break;
-                  case 32: ZustandText = "Fehler Selbsttest";
-                    break;
-                  case 33: ZustandText = "Fehler DC-Einspeisung";
-                    break;
-                  case 34: ZustandText = "Fehler Kommunikation";
-                    break;
-                  default: ZustandText = "Undefiniert";
-                    break;
-                }
+              sscanf(data.c_str(),"%s %i %f %f %i %f %f %i %f %i %9s %s", &deviceId, &state, &generatorVoltage, &generatorCurrent, &generatorPower, &gridVoltage, &gridCurrent, &suppliedPower, &deviceTemperature, &dailyEnergy, &parityByte, &InvDeviceName);
 
-                if (data.startsWith("*010")) {
-                  id(inv_1_device_id).publish_state(deviceId.c_str());
-                  id(inv_1_state).publish_state(state);
-                  id(inv_1_zustand).publish_state(ZustandText.c_str());
-                  id(inv_1_generator_voltage).publish_state(generatorVoltage);
-                  id(inv_1_generator_current).publish_state(generatorCurrent);
-                  id(inv_1_generator_power).publish_state(generatorPower);
-                  id(inv_1_grid_voltage).publish_state(gridVoltage);
-                  id(inv_1_grid_current).publish_state(gridCurrent);
-                  id(inv_1_supplied_power).publish_state(suppliedPower);
-                  id(inv_1_device_temperature).publish_state(deviceTemperature);
-                  id(inv_1_daily_energy).publish_state(dailyEnergy);
-                  id(PV_Energy_1).publish_state(dailyEnergy);
-                  id(inv_1_bezeichnung).publish_state(InvDeviceName.c_str());
-                }
-                if (data.startsWith("*020")) {
-                  id(inv_2_device_id).publish_state(deviceId.c_str());
-                  id(inv_2_state).publish_state(state);
-                  id(inv_2_zustand).publish_state(ZustandText.c_str());
-                  id(inv_2_generator_voltage).publish_state(generatorVoltage);
-                  id(inv_2_generator_current).publish_state(generatorCurrent);
-                  id(inv_2_generator_power).publish_state(generatorPower);
-                  id(inv_2_grid_voltage).publish_state(gridVoltage);
-                  id(inv_2_grid_current).publish_state(gridCurrent);
-                  id(inv_2_supplied_power).publish_state(suppliedPower);
-                  id(inv_2_device_temperature).publish_state(deviceTemperature);
-                  id(inv_2_daily_energy).publish_state(dailyEnergy);
-                  id(PV_Energy_2).publish_state(dailyEnergy);
-                  id(inv_2_bezeichnung).publish_state(InvDeviceName.c_str());
-                }
+              switch (state) {
+                case 0: ZustandText = "Wechselrichter hat sich gerade eingeschaltet";
+                  break;
+                case 1: ZustandText = "Warten auf Start";
+                  break;
+                case 2: ZustandText = "Warten auf Ausschalten";
+                  break;
+                case 3: ZustandText = "Konstantspannungsregler";
+                  break;
+                case 4: ZustandText = "MPP-Regler, ständige Suchbewegung";
+                  break;
+                case 5: ZustandText = "MPP-Regler, ohne Suchbewegung";
+                  break;
+                case 6: ZustandText = "Wartemodus vor Einspeisung, Netz- und Solarspannung testen";
+                  break;
+                case 7: ZustandText = "Wartemodus vor Selbsttest, Netz- und Solarspannung testen";
+                  break;
+                case 8: ZustandText = "Selbsttest der Relais";
+                  break;
+                case 10: ZustandText = "Übertemperaturabschaltung";
+                  break;
+                case 11: ZustandText = "Leistungsbegrenzung";
+                  break;
+                case 12: ZustandText = "Überlastabschaltung";
+                  break;
+                case 13: ZustandText = "Überspannungsabschaltung";
+                  break;
+                case 14: ZustandText = "Netzstörung (3-phasige Überwachung)";
+                  break;
+                case 15: ZustandText = "Übergang zur Nachtabschaltung";
+                  break;
+                case 18: ZustandText = "RCD Typ B-Abschaltung";
+                  break;
+                case 19: ZustandText = "Isolationswiderstand zu gering";
+                  break;
+                case 30: ZustandText = "Störung Messwandler";
+                  break;
+                case 31: ZustandText = "Fehler RCD Typ B-Modul";
+                  break;
+                case 32: ZustandText = "Fehler Selbsttest";
+                  break;
+                case 33: ZustandText = "Fehler DC-Einspeisung";
+                  break;
+                case 34: ZustandText = "Fehler Kommunikation";
+                  break;
+                default: ZustandText = "Undefiniert";
+                  break;
               }
-   
+
+              if (data.startsWith("*010")) {
+                id(inv_1_device_id).publish_state(deviceId.c_str());
+                id(inv_1_state).publish_state(state);
+                id(inv_1_zustand).publish_state(ZustandText.c_str());
+                id(inv_1_generator_voltage).publish_state(generatorVoltage);
+                id(inv_1_generator_current).publish_state(generatorCurrent);
+                id(inv_1_generator_power).publish_state(generatorPower);
+                id(inv_1_grid_voltage).publish_state(gridVoltage);
+                id(inv_1_grid_current).publish_state(gridCurrent);
+                id(inv_1_supplied_power).publish_state(suppliedPower);
+                id(inv_1_device_temperature).publish_state(deviceTemperature);
+                id(inv_1_daily_energy).publish_state(dailyEnergy);
+                id(PV_Energy_1).publish_state(dailyEnergy);
+                id(inv_1_bezeichnung).publish_state(InvDeviceName.c_str());
+              }
+              if (data.startsWith("*020")) {
+                id(inv_2_device_id).publish_state(deviceId.c_str());
+                id(inv_2_state).publish_state(state);
+                id(inv_2_zustand).publish_state(ZustandText.c_str());
+                id(inv_2_generator_voltage).publish_state(generatorVoltage);
+                id(inv_2_generator_current).publish_state(generatorCurrent);
+                id(inv_2_generator_power).publish_state(generatorPower);
+                id(inv_2_grid_voltage).publish_state(gridVoltage);
+                id(inv_2_grid_current).publish_state(gridCurrent);
+                id(inv_2_supplied_power).publish_state(suppliedPower);
+                id(inv_2_device_temperature).publish_state(deviceTemperature);
+                id(inv_2_daily_energy).publish_state(dailyEnergy);
+                id(PV_Energy_2).publish_state(dailyEnergy);
+                id(inv_2_bezeichnung).publish_state(InvDeviceName.c_str());
+              }
+            }
+  
 
 #### TIME SETUP ##################################################
 time:
