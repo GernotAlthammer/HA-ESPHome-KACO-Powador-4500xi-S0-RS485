@@ -8,7 +8,7 @@ The ESP8266 works as Data logger for KACO Powador Inverters 2500xi and 4500xi vi
 - Interface 1: S0 imupls count interface for Supplied Power to Grid (the number of counts per 1 kW is configurable in Inverter-Setup)
 - Interface 2: RS485 serial bus communication protocol for various data provided from the inverter (Inverter State, PV-Voltage, PV-Current, PV-Power, Grid-Voltage, Grid-Current, Supplied Power to Grid, Inverter Temperature, Daily Energy, Inverter Type Name)
 
-To compile the ESPHome code for the ESP8266 it is necessary to copy the file uart_read_line_sensor.h to the ESPHome directory of your Home Assistant.
+To compile the ESPHome code for the ESP8266 it is no longer necessary to copy the file uart_read_line_sensor.h to the ESPHome directory of your Home Assistant, as ESPHome 2025 does not support Custom Components.
 
 <img src="https://github.com/GernotAlthammer/HA-ESPHome-KACO-Powador-4500xi-S0-RS485/blob/main/Pictures/Inverter_ESP2866_Wirediagram_S0_RS485.png">
 
