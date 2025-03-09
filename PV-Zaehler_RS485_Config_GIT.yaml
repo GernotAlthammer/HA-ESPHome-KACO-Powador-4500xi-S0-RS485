@@ -20,6 +20,7 @@
 ### 2024-07-13 Status-Texte korrigiert
 ### 2024-09-28 Sscanf gekürzt um ZustandText
 ### 2025-03-08 Revoved Custom Component for uart_read_line_sensor.h
+### 2025-03-09 Correction of UART configuration to recieve value messages
 ###
 esphome:
   name: pv-s0-zaehler1
@@ -194,9 +195,9 @@ uart:
   #rx_buffer_size: 512 # Default is buffer size is 256 
   #newline: "\r\n"
   debug:
-    direction: TX # zum Auslesen der Daten vom PV-Controller
+    #direction: TX # zum Auslesen der Daten vom PV-Controller
     #direction: BOTH # nur zu Debugging-Zwecken
-    dummy_receiver: false
+    dummy_receiver: true
     after:
       #timeout: 250ms
       delimiter: "\n"
