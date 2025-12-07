@@ -793,7 +793,9 @@ text_sensor:
               id(inv_1_device_temperature).publish_state(deviceTemperature);
               id(inv_1_daily_energy).publish_state(dailyEnergy);
               id(PV_Energy_1).publish_state(dailyEnergy);
-              id(inv_1_bezeichnung).publish_state(InvDeviceName.c_str());
+              if (values > 10) {
+                id(inv_1_bezeichnung).publish_state(InvDeviceName.c_str());
+              }
             }
 
             // *** WR 2 *************************************************************
@@ -810,7 +812,9 @@ text_sensor:
               id(inv_2_device_temperature).publish_state(deviceTemperature);
               id(inv_2_daily_energy).publish_state(dailyEnergy);
               id(PV_Energy_2).publish_state(dailyEnergy);
-              id(inv_2_bezeichnung).publish_state(InvDeviceName.c_str());
+              if (values > 10) {
+                id(inv_2_bezeichnung).publish_state(InvDeviceName.c_str());
+              }
             }  
 
 
