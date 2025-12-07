@@ -696,105 +696,123 @@ text_sensor:
     on_value:
       then:
         - lambda: |-
+            // Original empfangene Rohdaten in einen String übernehmen
             String data = id(rawString).state.c_str();
-            if (data.startsWith("*")) {
-              String deviceId = "?000";
-              int state = 0;
-              float generatorVoltage = 0;  // Convert to integer with unit V
-              float generatorCurrent = 0;  // Convert to integer with unit A
-              int generatorPower = 0;  // Convert to integer with unit W
-              float gridVoltage = 0;  // Convert to integer with unit V
-              float gridCurrent = 0;  // Convert to integer with unit A
-              int suppliedPower = 0;  // Convert to integer with unit W
-              float deviceTemperature = 0;  // Convert to integer with unit °C
-              int dailyEnergy = 0;  // Convert to integer with unit Wh
-              String parityByte = "0";
-              String InvDeviceName = "------";
-              String ZustandText = "-                                                           ";
 
-              sscanf(data.c_str(),"%s %i %f %f %i %f %f %i %f %i %9s %s", &deviceId, &state, &generatorVoltage, &generatorCurrent, &generatorPower, &gridVoltage, &gridCurrent, &suppliedPower, &deviceTemperature, &dailyEnergy, &parityByte, &InvDeviceName);
-
-              switch (state) {
-                case 0: ZustandText = "Wechselrichter hat sich gerade eingeschaltet";
-                  break;
-                case 1: ZustandText = "Warten auf Start";
-                  break;
-                case 2: ZustandText = "Warten auf Ausschalten";
-                  break;
-                case 3: ZustandText = "Konstantspannungsregler";
-                  break;
-                case 4: ZustandText = "MPP-Regler, ständige Suchbewegung";
-                  break;
-                case 5: ZustandText = "MPP-Regler, ohne Suchbewegung";
-                  break;
-                case 6: ZustandText = "Wartemodus vor Einspeisung, Netz- und Solarspannung testen";
-                  break;
-                case 7: ZustandText = "Wartemodus vor Selbsttest, Netz- und Solarspannung testen";
-                  break;
-                case 8: ZustandText = "Selbsttest der Relais";
-                  break;
-                case 10: ZustandText = "Übertemperaturabschaltung";
-                  break;
-                case 11: ZustandText = "Leistungsbegrenzung";
-                  break;
-                case 12: ZustandText = "Überlastabschaltung";
-                  break;
-                case 13: ZustandText = "Überspannungsabschaltung";
-                  break;
-                case 14: ZustandText = "Netzstörung (3-phasige Überwachung)";
-                  break;
-                case 15: ZustandText = "Übergang zur Nachtabschaltung";
-                  break;
-                case 18: ZustandText = "RCD Typ B-Abschaltung";
-                  break;
-                case 19: ZustandText = "Isolationswiderstand zu gering";
-                  break;
-                case 30: ZustandText = "Störung Messwandler";
-                  break;
-                case 31: ZustandText = "Fehler RCD Typ B-Modul";
-                  break;
-                case 32: ZustandText = "Fehler Selbsttest";
-                  break;
-                case 33: ZustandText = "Fehler DC-Einspeisung";
-                  break;
-                case 34: ZustandText = "Fehler Kommunikation";
-                  break;
-                default: ZustandText = "Undefiniert";
-                  break;
-              }
-
-              if (data.startsWith("*010")) {
-                id(inv_1_device_id).publish_state(deviceId.c_str());
-                id(inv_1_state).publish_state(state);
-                id(inv_1_zustand).publish_state(ZustandText.c_str());
-                id(inv_1_generator_voltage).publish_state(generatorVoltage);
-                id(inv_1_generator_current).publish_state(generatorCurrent);
-                id(inv_1_generator_power).publish_state(generatorPower);
-                id(inv_1_grid_voltage).publish_state(gridVoltage);
-                id(inv_1_grid_current).publish_state(gridCurrent);
-                id(inv_1_supplied_power).publish_state(suppliedPower);
-                id(inv_1_device_temperature).publish_state(deviceTemperature);
-                id(inv_1_daily_energy).publish_state(dailyEnergy);
-                id(PV_Energy_1).publish_state(dailyEnergy);
-                id(inv_1_bezeichnung).publish_state(InvDeviceName.c_str());
-              }
-              if (data.startsWith("*020")) {
-                id(inv_2_device_id).publish_state(deviceId.c_str());
-                id(inv_2_state).publish_state(state);
-                id(inv_2_zustand).publish_state(ZustandText.c_str());
-                id(inv_2_generator_voltage).publish_state(generatorVoltage);
-                id(inv_2_generator_current).publish_state(generatorCurrent);
-                id(inv_2_generator_power).publish_state(generatorPower);
-                id(inv_2_grid_voltage).publish_state(gridVoltage);
-                id(inv_2_grid_current).publish_state(gridCurrent);
-                id(inv_2_supplied_power).publish_state(suppliedPower);
-                id(inv_2_device_temperature).publish_state(deviceTemperature);
-                id(inv_2_daily_energy).publish_state(dailyEnergy);
-                id(PV_Energy_2).publish_state(dailyEnergy);
-                id(inv_2_bezeichnung).publish_state(InvDeviceName.c_str());
-              }
+            // Nur fortfahren, wenn der Datensatz korrekt beginnt
+            if (!data.startsWith("*")) {
+              ESP_LOGD("pvz", "Ungültiger Datensatz empfangen: %s", data.c_str());
+              return;
             }
-  
+
+            // *** Puffer für Textteile (sscanf benötigt char-Arrays) **************
+            char deviceId_buf[16]       = "?000";
+            char parityByte_buf[16]     = "0";
+            char InvDeviceName_buf[64]  = "------";
+
+            // *** Variable für numerische Werte **********************************
+            int state = 0;
+            float generatorVoltage = 0;
+            float generatorCurrent = 0;
+            int generatorPower = 0;
+            float gridVoltage = 0;
+            float gridCurrent = 0;
+            int suppliedPower = 0;
+            float deviceTemperature = 0;
+            int dailyEnergy = 0;
+
+            // *** Rohdaten per sscanf parsen *************************************
+            // WICHTIG: %15s / %63s → schützt vor Buffer Overflow
+            int values = sscanf(
+              data.c_str(),
+              "%15s %d %f %f %d %f %f %d %f %d %15s %63s",
+              deviceId_buf,
+              &state,
+              &generatorVoltage,
+              &generatorCurrent,
+              &generatorPower,
+              &gridVoltage,
+              &gridCurrent,
+              &suppliedPower,
+              &deviceTemperature,
+              &dailyEnergy,
+              parityByte_buf,
+              InvDeviceName_buf
+            );
+
+            // Prüfen, ob alle Werte gelesen wurden
+            if (values < 12) {
+              ESP_LOGW("pvz", "Unvollständige Daten empfangen (%d Werte): %s", values, data.c_str());
+            }
+
+            // In String-Objekte konvertieren, damit ESPhome sie veröffentlichen kann
+            String deviceId      = String(deviceId_buf);
+            String parityByte    = String(parityByte_buf);
+            String InvDeviceName = String(InvDeviceName_buf);
+
+            // *** Zustandstexte für den WR ****************************************
+            String ZustandText;
+
+            switch (state) {
+              case 0:  ZustandText = "Wechselrichter hat sich gerade eingeschaltet"; break;
+              case 1:  ZustandText = "Warten auf Start"; break;
+              case 2:  ZustandText = "Warten auf Ausschalten"; break;
+              case 3:  ZustandText = "Konstantspannungsregler"; break;
+              case 4:  ZustandText = "MPP-Regler, ständige Suchbewegung"; break;
+              case 5:  ZustandText = "MPP-Regler, ohne Suchbewegung"; break;
+              case 6:  ZustandText = "Wartemodus vor Einspeisung (Prüfung)"; break;
+              case 7:  ZustandText = "Wartemodus vor Selbsttest"; break;
+              case 8:  ZustandText = "Selbsttest der Relais"; break;
+              case 10: ZustandText = "Übertemperaturabschaltung"; break;
+              case 11: ZustandText = "Leistungsbegrenzung"; break;
+              case 12: ZustandText = "Überlastabschaltung"; break;
+              case 13: ZustandText = "Überspannungsabschaltung"; break;
+              case 14: ZustandText = "Netzstörung (3-phasige Überwachung)"; break;
+              case 15: ZustandText = "Übergang zur Nachtabschaltung"; break;
+              case 18: ZustandText = "RCD Typ B-Abschaltung"; break;
+              case 19: ZustandText = "Isolationswiderstand zu gering"; break;
+              case 30: ZustandText = "Störung Messwandler"; break;
+              case 31: ZustandText = "Fehler RCD Typ B-Modul"; break;
+              case 32: ZustandText = "Fehler Selbsttest"; break;
+              case 33: ZustandText = "Fehler DC-Einspeisung"; break;
+              case 34: ZustandText = "Fehler Kommunikation"; break;
+              default: ZustandText = "Unbekannter Zustand"; break;
+            }
+
+            // *** WR 1 *************************************************************
+            if (data.startsWith("*010")) {
+              id(inv_1_device_id).publish_state(deviceId.c_str());
+              id(inv_1_state).publish_state(state);
+              id(inv_1_zustand).publish_state(ZustandText.c_str());
+              id(inv_1_generator_voltage).publish_state(generatorVoltage);
+              id(inv_1_generator_current).publish_state(generatorCurrent);
+              id(inv_1_generator_power).publish_state(generatorPower);
+              id(inv_1_grid_voltage).publish_state(gridVoltage);
+              id(inv_1_grid_current).publish_state(gridCurrent);
+              id(inv_1_supplied_power).publish_state(suppliedPower);
+              id(inv_1_device_temperature).publish_state(deviceTemperature);
+              id(inv_1_daily_energy).publish_state(dailyEnergy);
+              id(PV_Energy_1).publish_state(dailyEnergy);
+              id(inv_1_bezeichnung).publish_state(InvDeviceName.c_str());
+            }
+
+            // *** WR 2 *************************************************************
+            if (data.startsWith("*020")) {
+              id(inv_2_device_id).publish_state(deviceId.c_str());
+              id(inv_2_state).publish_state(state);
+              id(inv_2_zustand).publish_state(ZustandText.c_str());
+              id(inv_2_generator_voltage).publish_state(generatorVoltage);
+              id(inv_2_generator_current).publish_state(generatorCurrent);
+              id(inv_2_generator_power).publish_state(generatorPower);
+              id(inv_2_grid_voltage).publish_state(gridVoltage);
+              id(inv_2_grid_current).publish_state(gridCurrent);
+              id(inv_2_supplied_power).publish_state(suppliedPower);
+              id(inv_2_device_temperature).publish_state(deviceTemperature);
+              id(inv_2_daily_energy).publish_state(dailyEnergy);
+              id(PV_Energy_2).publish_state(dailyEnergy);
+              id(inv_2_bezeichnung).publish_state(InvDeviceName.c_str());
+            }  
+
 
 #### TIME SETUP ##################################################
 time:
