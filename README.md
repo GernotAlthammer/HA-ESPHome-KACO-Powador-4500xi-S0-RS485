@@ -1,7 +1,12 @@
 # HA-ESPHome-KACO-Powador-4500xi-S0-RS485
  
 > **Home Assistant integration for KACO Powador solar inverters (2500xi & 4500xi) via an ESP8266 microcontroller using S0 pulse counting and RS485 serial communication.**
- 
+  
+[![ESPHome](https://img.shields.io/badge/ESPHome-compatible-blue?logo=esphome)](https://esphome.io/)
+[![Home Assistant](https://img.shields.io/badge/Home%20Assistant-integration-41BDF5?logo=home-assistant)](https://www.home-assistant.io/)
+[![Hardware](https://img.shields.io/badge/Hardware-ESP8266-red)](https://www.espressif.com/)
+[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+
 ---
  
 ## Table of Contents
